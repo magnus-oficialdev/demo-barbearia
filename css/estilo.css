@@ -2,6 +2,17 @@
    Mobile-first. Todo valor visual vem dos tokens do :root.
    Breakpoints ficam em px literais porque media queries não aceitam var(). */
 
+/* ============ FONTE DE RESERVA ============ */
+/* Enquanto a Big Shoulders Display não chega, usa uma fonte do sistema
+   encolhida para ocupar a mesma largura (evita o "OFÍCIO" vazar ou pular). */
+@font-face {
+  font-family: "Big Shoulders reserva";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Bold"), local("Helvetica-Bold"),
+       local("Roboto Bold"), local("Roboto-Bold"), local("Liberation Sans Bold"), local("LiberationSans-Bold");
+  font-weight: 700;
+  size-adjust: 59%;
+}
+
 /* ============ TOKENS ============ */
 :root {
   /* Cores (60-30-10) — ver .ux-profile.md */
@@ -16,7 +27,7 @@
   --cor-texto-suave: #9C9C9C;
 
   /* Tipografia: 2 famílias, 3 pesos */
-  --fonte-titulo: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --fonte-titulo: "Big Shoulders Display", "Big Shoulders reserva", "Arial Narrow", sans-serif;
   --fonte-texto: "Barlow", system-ui, sans-serif;
   --peso-regular: 400;
   --peso-semi: 600;
@@ -62,9 +73,12 @@
   --icone: 20px;
   --icone-grande: 32px;
   --traco-icone: 2;
-  --poste-largura: 64px;
+  /* Poste fluido: cresce com a largura e, em telas baixas (notebooks), encolhe para o CTA caber na 1ª tela */
+  --poste-largura: clamp(64px, min(12vw + 18px, (100svh - 400px) * 9 / 26), 160px);
   --poste-altura: calc(var(--poste-largura) * 26 / 9); /* mesma proporção do 3D */
-  --poste-vao: calc(var(--poste-largura) + 2 * var(--esp-2));
+  --poste-vao: calc(var(--poste-largura) * 1.25);
+  --altura-topo: calc(var(--alvo-toque) + var(--esp-4));
+  --reserva-base: calc(var(--alvo-toque) + var(--esp-6)); /* barra de agendar + selo, no celular */
   --largura-apoio: 46ch;
 
   /* Raios */
@@ -88,7 +102,14 @@
 
 * { margin: 0; }
 
-html { scroll-behavior: smooth; }
+html {
+  /* âncoras e foco do teclado não ficam escondidos atrás do topo e das faixas fixas */
+  scroll-padding-top: var(--altura-topo);
+  scroll-padding-bottom: var(--reserva-base);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
 
 body {
   background: var(--cor-fundo);
@@ -99,7 +120,7 @@ body {
   line-height: var(--entrelinha-corpo);
   -webkit-font-smoothing: antialiased;
   /* espaço para a barra fixa de agendamento no celular */
-  padding-bottom: calc(var(--alvo-toque) + var(--esp-6));
+  padding-bottom: var(--reserva-base);
 }
 
 img, svg { display: block; max-width: 100%; }
@@ -242,14 +263,11 @@ a { color: inherit; }
   text-align: center;
 }
 
-/* Palavras e poste dividem a mesma célula da grade: o poste fica no vão do meio */
+/* O palco só serve de referência de largura (cqi) para o tamanho da marca */
 .hero__palco {
   container-type: inline-size;
-  display: grid;
-  place-items: center;
-  min-height: var(--poste-altura);
+  overflow-x: clip; /* nunca cria rolagem lateral, mesmo com fonte de reserva */
 }
-.hero__palco > * { grid-area: 1 / 1; }
 
 .hero__marca {
   display: grid;
@@ -264,9 +282,11 @@ a { color: inherit; }
   white-space: nowrap;
 }
 .hero__palavra--esq { justify-self: end; }
-.hero__palavra--dir { grid-column: 3; justify-self: start; }
+.hero__palavra--dir { justify-self: start; }
 
+/* Poste na coluna do meio: mais alto que as letras, atravessa a linha */
 .hero__poste {
+  justify-self: center;
   display: grid;
   width: var(--poste-largura);
   height: var(--poste-altura);
@@ -278,7 +298,7 @@ a { color: inherit; }
 .hero__poste--3d .hero__poste-canvas { visibility: visible; }
 .hero__poste--3d .hero__poste-img { visibility: hidden; }
 
-/* Enquanto a entrada em GSAP não começa (no máximo 1,5 s, ver principal.js) */
+/* Enquanto a entrada em GSAP não começa (no máximo 1,5 s: rede de segurança no <head>) */
 .entrada .hero [data-entrada] { opacity: 0; }
 
 .hero__texto { margin-top: var(--esp-4); }
@@ -548,10 +568,6 @@ a { color: inherit; }
 
 /* ============ TABLET (≥ 720px) ============ */
 @media (min-width: 720px) {
-  :root {
-    --poste-largura: 112px;
-    --poste-vao: calc(var(--poste-largura) + 2 * var(--esp-3));
-  }
   .barbeiros { grid-template-columns: repeat(2, 1fr); gap: var(--esp-5); }
   .casa { grid-template-columns: repeat(2, 1fr); }
   .casa__bloco + .casa__bloco { border-top: 0; border-left: var(--borda-fina) solid var(--cor-borda); }
@@ -564,10 +580,7 @@ a { color: inherit; }
 
 /* ============ DESKTOP (≥ 1024px) ============ */
 @media (min-width: 1024px) {
-  :root {
-    --poste-largura: 160px;
-    --poste-vao: calc(var(--poste-largura) + 2 * var(--esp-5));
-  }
+  :root { --reserva-base: var(--esp-5); } /* só a faixa do selo */
   .barra-agendar { display: none; }
 
   .topo__interno { padding-inline: var(--esp-5); }
@@ -594,6 +607,5 @@ a { color: inherit; }
   .local { grid-template-columns: 1fr 1fr; gap: var(--esp-6); align-items: start; }
 
   /* No desktop o selo vira faixa no rodapé da janela (sem cobrir conteúdo de forma permanente) */
-  body { padding-bottom: var(--esp-4); }
   .selo-demo { bottom: 0; }
 }

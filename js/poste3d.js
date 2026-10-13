@@ -2,7 +2,7 @@
 // Geometria, textura das listras e o "estúdio" que gera os reflexos são feitos
 // por código. Nenhum arquivo de modelo ou imagem é carregado.
 //
-// Comportamento: o cilindro interno gira conforme a rolagem do hero e o poste
+// Comportamento: o cilindro interno gira devagar conforme a rolagem e o poste
 // inclina de leve seguindo o mouse. Quando nada muda, para de desenhar
 // (sem giro infinito). Fora da tela, pausa.
 
@@ -23,7 +23,8 @@ export const PROPORCAO = 9 / 26;
 const RAIO_LISTRAS = 0.34;
 const RAIO_VIDRO = 0.38;
 const ALTURA_VIDRO = 2.5;
-const GIROS_POR_HERO = 1.25;  // voltas do cilindro ao rolar o hero inteiro
+const GIRO_POR_PIXEL = 0.006; // radianos de giro do cilindro por pixel rolado (~0,34°)
+const VELOCIDADE_MAX = Math.PI; // radianos por segundo (meia volta/s): giro sempre lento
 const INCLINACAO_MAX = 0.12;  // radianos
 const SUAVIDADE = 3.2;        // quanto maior, mais rápido alcança o alvo
 const LIMIAR = 0.002;         // abaixo disso (radianos) o movimento é imperceptível: para de desenhar
@@ -115,7 +116,8 @@ function ambienteEstudio(renderer) {
   const parede = new Mesh(new BoxGeometry(12, 12, 12), new MeshBasicMaterial({ color: 0x262626, side: BackSide }));
   sala.add(parede);
   const pmrem = new PMREMGenerator(renderer);
-  const env = pmrem.fromScene(sala, 0.035).texture;
+  // 128 px bastam: o poste ocupa no máximo ~160 px de largura na tela
+  const env = pmrem.fromScene(sala, 0.035, 0.1, 100, { size: 128 }).texture;
   pmrem.dispose();
   caixa.dispose();
   return env;
@@ -206,7 +208,12 @@ function montarPoste(cores, renderer) {
   return { poste, listras };
 }
 
-function criarCena(canvas, { preservarQuadro = false } = {}) {
+// Cede a vez para o navegador desenhar/responder entre etapas pesadas.
+const cederVez = () => new Promise((r) => setTimeout(r, 0));
+
+// Monta renderer, cena e câmera. Com `ceder`, a montagem é feita em etapas
+// (sem uma tarefa longa travando a página). A captura do plano B usa a versão direta.
+function* etapasDaCena(canvas, preservarQuadro) {
   const renderer = new WebGLRenderer({
     canvas,
     antialias: true,
@@ -217,10 +224,12 @@ function criarCena(canvas, { preservarQuadro = false } = {}) {
   renderer.toneMapping = NeutralToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.setClearColor(0x000000, 0);
+  yield;
 
   const cena = new Scene();
   cena.environment = ambienteEstudio(renderer);
   cena.environmentIntensity = 0.9;
+  yield;
 
   const chave = new DirectionalLight(0xffffff, 1.4);
   chave.position.set(-3, 3, 4);
@@ -240,6 +249,23 @@ function criarCena(canvas, { preservarQuadro = false } = {}) {
   return { renderer, cena, camera, poste, listras };
 }
 
+function criarCena(canvas, { preservarQuadro = false } = {}) {
+  const etapas = etapasDaCena(canvas, preservarQuadro);
+  let passo = etapas.next();
+  while (!passo.done) passo = etapas.next();
+  return passo.value;
+}
+
+async function criarCenaEmEtapas(canvas) {
+  const etapas = etapasDaCena(canvas, false);
+  let passo = etapas.next();
+  while (!passo.done) {
+    await cederVez();
+    passo = etapas.next();
+  }
+  return passo.value;
+}
+
 function ajustarTamanho(ctx, largura, altura, razaoPixel) {
   ctx.renderer.setPixelRatio(razaoPixel);
   ctx.renderer.setSize(largura, altura, false);
@@ -247,13 +273,15 @@ function ajustarTamanho(ctx, largura, altura, razaoPixel) {
   ctx.camera.updateProjectionMatrix();
 }
 
+const razaoPixel = () => Math.min(window.devicePixelRatio || 1, 2);
+
 /**
  * Monta o poste interativo dentro de `palco` (o elemento .hero__poste).
  * Lança erro se o WebGL não estiver disponível — quem chama mantém a imagem estática.
  * @param {HTMLElement} palco
- * @param {{ aoFicarPronto?: () => void }} opcoes
+ * @param {{ aoFicarPronto?: () => void, aoFalhar?: () => void }} opcoes
  */
-export async function iniciarPoste(palco, { aoFicarPronto } = {}) {
+export async function iniciarPoste(palco, { aoFicarPronto, aoFalhar } = {}) {
   const canvas = document.createElement('canvas');
   canvas.className = 'hero__poste-canvas';
   canvas.setAttribute('aria-hidden', 'true');
@@ -261,25 +289,24 @@ export async function iniciarPoste(palco, { aoFicarPronto } = {}) {
 
   let ctx;
   try {
-    ctx = criarCena(canvas);
+    ctx = await criarCenaEmEtapas(canvas);
   } catch (erro) {
     canvas.remove();
     throw erro;
   }
 
-  const razaoPixel = Math.min(window.devicePixelRatio || 1, 2);
-  const medir = () => {
-    const caixa = palco.getBoundingClientRect();
-    if (caixa.width > 0 && caixa.height > 0) ajustarTamanho(ctx, caixa.width, caixa.height, razaoPixel);
-  };
-  medir();
-
   // Estado: valores atuais perseguem os alvos com suavização exponencial
   let giro = 0, alvoGiro = 0;
   let inclX = 0, alvoInclX = 0, inclZ = 0, alvoInclZ = 0;
-  let visivel = true, rodando = false, ultimo = 0;
+  let pronto = false, perdido = false, visivel = true, rodando = false, ultimo = 0;
+
+  const medir = () => {
+    const caixa = palco.getBoundingClientRect();
+    if (caixa.width > 0 && caixa.height > 0) ajustarTamanho(ctx, caixa.width, caixa.height, razaoPixel());
+  };
 
   const desenhar = () => {
+    if (!pronto || perdido) return; // nada de desenhar antes dos shaders prontos
     ctx.listras.rotation.y = giro;
     ctx.poste.rotation.x = inclX;
     ctx.poste.rotation.z = inclZ;
@@ -287,10 +314,13 @@ export async function iniciarPoste(palco, { aoFicarPronto } = {}) {
   };
 
   const quadro = (agora) => {
+    if (perdido) { rodando = false; return; }
     const dt = Math.min((agora - ultimo) / 1000, 0.1);
     ultimo = agora;
     const k = 1 - Math.exp(-SUAVIDADE * dt);
-    giro += (alvoGiro - giro) * k;
+    // giro: suavizado e com velocidade máxima (meia volta por segundo)
+    const passoMax = VELOCIDADE_MAX * dt;
+    giro += Math.max(-passoMax, Math.min(passoMax, (alvoGiro - giro) * k));
     inclX += (alvoInclX - inclX) * k;
     inclZ += (alvoInclZ - inclZ) * k;
     desenhar();
@@ -300,17 +330,15 @@ export async function iniciarPoste(palco, { aoFicarPronto } = {}) {
   };
 
   const acordar = () => {
-    if (rodando || !visivel) return;
+    if (rodando || !visivel || !pronto || perdido) return;
     rodando = true;
     ultimo = performance.now();
     requestAnimationFrame(quadro);
   };
 
-  // Progresso = quanto da rolagem já foi feita até o poste sair pelo topo da tela
+  // Giro proporcional aos pixels rolados (igual em qualquer largura de tela)
   const aoRolar = () => {
-    const fim = palco.getBoundingClientRect().bottom + window.scrollY;
-    const progresso = Math.min(Math.max(window.scrollY / fim, 0), 1);
-    alvoGiro = progresso * GIROS_POR_HERO * Math.PI * 2;
+    alvoGiro = window.scrollY * GIRO_POR_PIXEL;
     acordar();
   };
 
@@ -323,13 +351,12 @@ export async function iniciarPoste(palco, { aoFicarPronto } = {}) {
   };
 
   window.addEventListener('scroll', aoRolar, { passive: true });
-  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    window.addEventListener('pointermove', aoMoverMouse, { passive: true });
-  }
+  const usaMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (usaMouse) window.addEventListener('pointermove', aoMoverMouse, { passive: true });
 
-  // Pausa fora da tela
-  const observador = new IntersectionObserver(([entrada]) => {
-    visivel = entrada.isIntersecting;
+  // Pausa fora da tela (vale a última entrada: rolagem rápida pode juntar várias)
+  const observador = new IntersectionObserver((entradas) => {
+    visivel = !perdido && entradas[entradas.length - 1].isIntersecting;
     if (visivel) { aoRolar(); desenhar(); }
   });
   observador.observe(palco);
@@ -337,22 +364,44 @@ export async function iniciarPoste(palco, { aoFicarPronto } = {}) {
   const redimensionar = new ResizeObserver(() => { medir(); desenhar(); });
   redimensionar.observe(palco);
 
-  // Se o contexto WebGL for perdido, devolve a vez para a imagem estática
+  // Zoom ou troca de monitor mudam a densidade de pixels: refaz o tamanho do canvas
+  let consultaDpr;
+  const vigiarDpr = () => {
+    consultaDpr = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+    consultaDpr.addEventListener('change', aoMudarDpr, { once: true });
+  };
+  function aoMudarDpr() { medir(); desenhar(); vigiarDpr(); }
+  vigiarDpr();
+
+  // Contexto WebGL perdido: para tudo e devolve a vez para a imagem estática
   canvas.addEventListener('webglcontextlost', () => {
+    perdido = true;
+    visivel = false;
     palco.classList.remove('hero__poste--3d');
+    observador.disconnect();
+    redimensionar.disconnect();
+    window.removeEventListener('scroll', aoRolar);
+    if (usaMouse) window.removeEventListener('pointermove', aoMoverMouse);
+    if (consultaDpr) consultaDpr.removeEventListener('change', aoMudarDpr);
+    if (aoFalhar) aoFalhar();
   });
 
+  medir();
   // Compila os shaders sem travar a página quando o navegador permite
   if (ctx.renderer.extensions.has('KHR_parallel_shader_compile')) {
     await ctx.renderer.compileAsync(ctx.cena, ctx.camera);
   } else {
+    await cederVez();
     ctx.renderer.compile(ctx.cena, ctx.camera);
   }
-  aoRolar();
-  giro = alvoGiro;
+  if (perdido) return;
+  pronto = true;
+  alvoGiro = window.scrollY * GIRO_POR_PIXEL;
+  giro = alvoGiro; // começa já na pose certa (sem girar sozinho ao aparecer)
   desenhar();
   // Mostra o canvas só depois do primeiro quadro desenhado (troca invisível com a imagem)
   requestAnimationFrame(() => {
+    if (perdido) return;
     palco.classList.add('hero__poste--3d');
     if (aoFicarPronto) aoFicarPronto();
   });

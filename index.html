@@ -12,8 +12,14 @@
   <link rel="stylesheet" href="css/estilo.css">
   <script>
     // Esconde o texto do hero só enquanto a entrada em GSAP não começa.
-    // Com movimento reduzido, nada é escondido. Rede de segurança em principal.js.
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('entrada');
+    // Rede de segurança: em no máximo 1,5 s o texto aparece, mesmo se o GSAP
+    // ou o principal.js atrasarem ou falharem. Com movimento reduzido, nada é escondido.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('entrada');
+      window.__segurancaEntrada = setTimeout(function () {
+        document.documentElement.classList.remove('entrada');
+      }, 1500);
+    }
   </script>
   <script type="importmap">
     { "imports": { "three": "./vendor/three@0.186.1/three.module.min.js" } }
@@ -61,19 +67,20 @@
     <section class="hero" id="inicio" aria-labelledby="hero-titulo">
       <div class="hero__interno">
         <div class="hero__palco">
+          <!-- "Ofício" | poste | "22" na mesma grade: se a fonte mudar de largura, o poste é empurrado, não sobreposto. -->
           <h1 class="hero__marca" id="hero-titulo" aria-label="Ofício 22">
             <span class="hero__palavra hero__palavra--esq" data-entrada>Ofício</span>
+            <!-- Poste: imagem estática gerada do próprio 3D (plano B e espera do carregamento).
+                 O canvas 3D entra por cima quando estiver pronto. -->
+            <span class="hero__poste" data-entrada aria-hidden="true">
+              <img class="hero__poste-img"
+                   src="img/poste-480.webp"
+                   srcset="img/poste-240.webp 240w, img/poste-480.webp 480w"
+                   sizes="(min-width: 1184px) 160px, calc(12vw + 18px)"
+                   width="480" height="1387" alt="" decoding="async">
+            </span>
             <span class="hero__palavra hero__palavra--dir" data-entrada>22</span>
           </h1>
-          <!-- Poste: imagem estática gerada do próprio 3D (plano B e espera do carregamento).
-               O canvas 3D entra por cima quando estiver pronto. -->
-          <div class="hero__poste" data-entrada aria-hidden="true">
-            <img class="hero__poste-img"
-                 src="img/poste-480.webp"
-                 srcset="img/poste-240.webp 240w, img/poste-480.webp 480w"
-                 sizes="(min-width: 1024px) 160px, (min-width: 720px) 112px, 64px"
-                 width="480" height="1387" alt="" decoding="async">
-          </div>
         </div>
 
         <div class="hero__texto">
