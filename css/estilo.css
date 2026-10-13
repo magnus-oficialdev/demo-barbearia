@@ -14,7 +14,6 @@
   --cor-sobre-acento: #161616;
   --cor-texto: #F2F2EE;          /* branco quente */
   --cor-texto-suave: #9C9C9C;
-  --cor-metal: #9C9C9C;          /* tampas do poste */
 
   /* Tipografia: 2 famílias, 3 pesos */
   --fonte-titulo: "Big Shoulders Display", "Arial Narrow", sans-serif;
@@ -33,7 +32,9 @@
   --texto-4: 2.074rem;           /* 33.2px */
   --texto-5: 2.488rem;           /* 39.8px */
   --texto-6: 2.986rem;           /* 47.8px */
-  --texto-display: clamp(5.16rem, 1.5rem + 18vw, 10.7rem); /* passos 9 → 13 */
+  --texto-marca-min: 2.986rem;   /* passo 6 — só em telas muito estreitas */
+  --texto-marca-max: 12.84rem;   /* passo 14 */
+  --marca-razao: 4.2;            /* largura de 2× "OFÍCIO" em em, com folga */
 
   --entrelinha-display: 1.1;
   --entrelinha-titulo: 1.2;
@@ -61,8 +62,10 @@
   --icone: 20px;
   --icone-grande: 32px;
   --traco-icone: 2;
-  --poste-largura: 72px;
-  --poste-largura-g: 136px;
+  --poste-largura: 64px;
+  --poste-altura: calc(var(--poste-largura) * 26 / 9); /* mesma proporção do 3D */
+  --poste-vao: calc(var(--poste-largura) + 2 * var(--esp-2));
+  --largura-apoio: 46ch;
 
   /* Raios */
   --raio-1: 4px;
@@ -230,56 +233,78 @@ a { color: inherit; }
 .topo__nav { display: none; }
 
 /* ============ HERO ============ */
+/* Eixo central: "Ofício" | poste | "22", com o texto centralizado abaixo. */
 .hero { border-bottom: var(--borda-fina) solid var(--cor-borda); }
 .hero__interno {
-  display: grid;
-  grid-template-columns: 1fr var(--poste-largura);
-  gap: var(--esp-3);
   max-width: var(--largura-max);
   margin-inline: auto;
-  padding: var(--esp-6) var(--esp-3) var(--esp-7);
+  padding: var(--esp-5) var(--esp-3) var(--esp-7);
+  text-align: center;
 }
+
+/* Palavras e poste dividem a mesma célula da grade: o poste fica no vão do meio */
+.hero__palco {
+  container-type: inline-size;
+  display: grid;
+  place-items: center;
+  min-height: var(--poste-altura);
+}
+.hero__palco > * { grid-area: 1 / 1; }
+
 .hero__marca {
+  display: grid;
+  grid-template-columns: 1fr var(--poste-vao) 1fr;
+  align-items: center;
+  width: 100%;
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-titulo);
-  font-size: var(--texto-display);
+  font-size: clamp(var(--texto-marca-min), calc((100cqi - var(--poste-vao)) / var(--marca-razao)), var(--texto-marca-max));
   line-height: var(--entrelinha-display);
   text-transform: uppercase;
+  white-space: nowrap;
 }
-.hero__linha { display: block; }
+.hero__palavra--esq { justify-self: end; }
+.hero__palavra--dir { grid-column: 3; justify-self: start; }
+
+.hero__poste {
+  display: grid;
+  width: var(--poste-largura);
+  height: var(--poste-altura);
+  pointer-events: none;
+}
+.hero__poste > * { grid-area: 1 / 1; width: 100%; height: 100%; }
+.hero__poste-img { object-fit: contain; }
+.hero__poste-canvas { visibility: hidden; }
+.hero__poste--3d .hero__poste-canvas { visibility: visible; }
+.hero__poste--3d .hero__poste-img { visibility: hidden; }
+
+/* Enquanto a entrada em GSAP não começa (no máximo 1,5 s, ver principal.js) */
+.entrada .hero [data-entrada] { opacity: 0; }
+
+.hero__texto { margin-top: var(--esp-4); }
 .hero__chamada {
-  margin-top: var(--esp-4);
   font-size: var(--texto-2);
   font-weight: var(--peso-semi);
   line-height: var(--entrelinha-titulo);
 }
 .hero__apoio {
-  margin-top: var(--esp-3);
-  max-width: var(--largura-texto);
+  max-width: var(--largura-apoio);
+  margin: var(--esp-3) auto 0;
   color: var(--cor-texto-suave);
 }
 .hero__acoes {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: var(--esp-2) var(--esp-4);
   margin-top: var(--esp-5);
 }
 .hero__fundacao {
-  margin-top: var(--esp-4);
+  margin-top: var(--esp-3);
   font-size: var(--texto-secundario);
   color: var(--cor-texto-suave);
 }
-.hero__poste { align-self: start; }
-
-/* Poste estático (fallback do 3D) */
-.poste { width: 100%; height: auto; }
-.poste__branco { fill: var(--cor-texto); }
-.poste__ambar { fill: var(--cor-acento); }
-.poste__carvao { fill: var(--cor-fundo); }
-.poste__tampa { fill: var(--cor-metal); }
-.poste__ponta { fill: var(--cor-borda); }
-.poste__aro { fill: none; stroke: var(--cor-borda); stroke-width: var(--borda-foco); }
 
 /* ============ SEÇÕES ============ */
 .secao { padding-block: var(--esp-7); }
@@ -504,8 +529,8 @@ a { color: inherit; }
   box-shadow: var(--sombra-flutuante);
 }
 
-/* No celular o selo vira uma faixa colada em cima da barra de agendamento,
-   para não cobrir conteúdo. No desktop vira etiqueta no canto. */
+/* Selo: faixa fina e fixa. No celular fica colada em cima da barra de agendamento;
+   no desktop, no pé da janela. O body reserva esse espaço para nada ficar escondido. */
 .selo-demo {
   position: fixed;
   inset-inline: 0;
@@ -523,6 +548,10 @@ a { color: inherit; }
 
 /* ============ TABLET (≥ 720px) ============ */
 @media (min-width: 720px) {
+  :root {
+    --poste-largura: 112px;
+    --poste-vao: calc(var(--poste-largura) + 2 * var(--esp-3));
+  }
   .barbeiros { grid-template-columns: repeat(2, 1fr); gap: var(--esp-5); }
   .casa { grid-template-columns: repeat(2, 1fr); }
   .casa__bloco + .casa__bloco { border-top: 0; border-left: var(--borda-fina) solid var(--cor-borda); }
@@ -535,7 +564,10 @@ a { color: inherit; }
 
 /* ============ DESKTOP (≥ 1024px) ============ */
 @media (min-width: 1024px) {
-  body { padding-bottom: 0; }
+  :root {
+    --poste-largura: 160px;
+    --poste-vao: calc(var(--poste-largura) + 2 * var(--esp-5));
+  }
   .barra-agendar { display: none; }
 
   .topo__interno { padding-inline: var(--esp-5); }
@@ -551,12 +583,7 @@ a { color: inherit; }
   }
   .topo__nav a:hover { color: var(--cor-texto); }
 
-  .hero__interno {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: var(--esp-6);
-    padding: var(--esp-8) var(--esp-5) var(--esp-8);
-  }
-  .hero__poste { align-self: center; justify-self: center; width: var(--poste-largura-g); }
+  .hero__interno { padding: var(--esp-5) var(--esp-5) var(--esp-7); }
 
   .secao { padding-block: var(--esp-8); }
   .secao__interno { padding-inline: var(--esp-5); }
@@ -566,11 +593,7 @@ a { color: inherit; }
 
   .local { grid-template-columns: 1fr 1fr; gap: var(--esp-6); align-items: start; }
 
-  .selo-demo {
-    inset-inline: auto var(--esp-3);
-    bottom: var(--esp-3);
-    background: var(--cor-superficie);
-    border: var(--borda-fina) solid var(--cor-borda);
-    border-radius: var(--raio-1);
-  }
+  /* No desktop o selo vira faixa no rodapé da janela (sem cobrir conteúdo de forma permanente) */
+  body { padding-bottom: var(--esp-4); }
+  .selo-demo { bottom: 0; }
 }

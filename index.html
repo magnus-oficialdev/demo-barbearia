@@ -10,6 +10,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700&display=swap">
   <link rel="stylesheet" href="css/estilo.css">
+  <script>
+    // Esconde o texto do hero só enquanto a entrada em GSAP não começa.
+    // Com movimento reduzido, nada é escondido. Rede de segurança em principal.js.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('entrada');
+  </script>
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three@0.186.1/three.module.min.js" } }
+  </script>
+  <script src="vendor/gsap@3.15.0/gsap.min.js" defer></script>
   <script src="js/principal.js" defer></script>
 </head>
 <body>
@@ -51,14 +60,26 @@
     <!-- HERO -->
     <section class="hero" id="inicio" aria-labelledby="hero-titulo">
       <div class="hero__interno">
-        <div class="hero__texto">
-          <h1 class="hero__marca" id="hero-titulo">
-            <span class="hero__linha">Ofício</span>
-            <span class="hero__linha">22</span>
+        <div class="hero__palco">
+          <h1 class="hero__marca" id="hero-titulo" aria-label="Ofício 22">
+            <span class="hero__palavra hero__palavra--esq" data-entrada>Ofício</span>
+            <span class="hero__palavra hero__palavra--dir" data-entrada>22</span>
           </h1>
-          <p class="hero__chamada">Barbearia de bairro. Hora marcada, sem fila.</p>
-          <p class="hero__apoio">Dois barbeiros, uma cadeira de cada vez. Você marca pelo WhatsApp, chega no horário e senta.</p>
-          <div class="hero__acoes">
+          <!-- Poste: imagem estática gerada do próprio 3D (plano B e espera do carregamento).
+               O canvas 3D entra por cima quando estiver pronto. -->
+          <div class="hero__poste" data-entrada aria-hidden="true">
+            <img class="hero__poste-img"
+                 src="img/poste-480.webp"
+                 srcset="img/poste-240.webp 240w, img/poste-480.webp 480w"
+                 sizes="(min-width: 1024px) 160px, (min-width: 720px) 112px, 64px"
+                 width="480" height="1387" alt="" decoding="async">
+          </div>
+        </div>
+
+        <div class="hero__texto">
+          <p class="hero__chamada" data-entrada>Barbearia de bairro. Hora marcada, sem fila.</p>
+          <p class="hero__apoio" data-entrada>Dois barbeiros, uma cadeira de cada vez. Você marca pelo WhatsApp, chega no horário e senta.</p>
+          <div class="hero__acoes" data-entrada>
             <!-- TROCAR: número de WhatsApp fictício -->
             <a class="botao" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
               <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
@@ -66,27 +87,7 @@
             </a>
             <a class="link" href="#servicos">Ver serviços e preços</a>
           </div>
-          <p class="hero__fundacao">Desde 2022 <span class="nota-demo">(data fictícia)</span></p>
-        </div>
-
-        <!-- Lugar do poste 3D. Por enquanto, versão estática em SVG (também serve de fallback). -->
-        <div class="hero__poste" aria-hidden="true">
-          <svg class="poste" viewBox="0 0 80 400" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <pattern id="listras" width="80" height="96" patternUnits="userSpaceOnUse" patternTransform="skewY(-30)">
-                <rect class="poste__branco" width="80" height="96"/>
-                <rect class="poste__ambar" y="0" width="80" height="24"/>
-                <rect class="poste__carvao" y="48" width="80" height="24"/>
-              </pattern>
-              <clipPath id="vidro"><rect x="16" y="60" width="48" height="280" rx="4"/></clipPath>
-            </defs>
-            <rect class="poste__ponta" x="34" y="0" width="12" height="20"/>
-            <path d="M12 44 Q12 22 40 20 Q68 22 68 44 L68 60 L12 60 Z" class="poste__tampa"/>
-            <rect x="16" y="60" width="48" height="280" fill="url(#listras)" clip-path="url(#vidro)"/>
-            <rect x="16" y="60" width="48" height="280" rx="4" class="poste__aro"/>
-            <path d="M12 340 L68 340 L68 356 Q68 378 40 380 Q12 378 12 356 Z" class="poste__tampa"/>
-            <rect class="poste__ponta" x="34" y="380" width="12" height="20"/>
-          </svg>
+          <p class="hero__fundacao" data-entrada>Desde 2022 <span class="nota-demo">(data fictícia)</span></p>
         </div>
       </div>
     </section>
