@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ofício 22 — Barbearia de bairro com hora marcada</title>
+  <meta name="description" content="Barbearia de bairro com dois barbeiros. Corte e barba com hora marcada pelo WhatsApp, sem fila. Projeto de demonstração.">
+  <meta name="theme-color" content="#161616">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700&display=swap">
+  <link rel="stylesheet" href="css/estilo.css">
+  <script src="js/principal.js" defer></script>
+</head>
+<body>
+  <!-- Ícones Lucide (lucide-static v1.56.0, ISC) -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-mensagem" viewBox="0 0 24 24"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></symbol>
+    <symbol id="i-cafe" viewBox="0 0 24 24"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></symbol>
+    <symbol id="i-chama" viewBox="0 0 24 24"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></symbol>
+    <symbol id="i-tesoura" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></symbol>
+    <symbol id="i-relogio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-pino" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-pessoa" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  </svg>
+
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="topo__interno">
+      <a class="topo__marca" href="#inicio">Ofício 22</a>
+      <nav class="topo__nav" aria-label="Seções">
+        <ul>
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#ritual">Ritual</a></li>
+          <li><a href="#barbeiros">Barbeiros</a></li>
+          <li><a href="#galeria">Galeria</a></li>
+          <li><a href="#horario">Horário</a></li>
+        </ul>
+      </nav>
+      <!-- TROCAR: número de WhatsApp fictício -->
+      <a class="botao botao--pequeno" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+        <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
+        Agendar
+      </a>
+    </div>
+  </header>
+
+  <main id="conteudo">
+
+    <!-- HERO -->
+    <section class="hero" id="inicio" aria-labelledby="hero-titulo">
+      <div class="hero__interno">
+        <div class="hero__texto">
+          <h1 class="hero__marca" id="hero-titulo">
+            <span class="hero__linha">Ofício</span>
+            <span class="hero__linha">22</span>
+          </h1>
+          <p class="hero__chamada">Barbearia de bairro. Hora marcada, sem fila.</p>
+          <p class="hero__apoio">Dois barbeiros, uma cadeira de cada vez. Você marca pelo WhatsApp, chega no horário e senta.</p>
+          <div class="hero__acoes">
+            <!-- TROCAR: número de WhatsApp fictício -->
+            <a class="botao" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+              <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
+              Agendar pelo WhatsApp
+            </a>
+            <a class="link" href="#servicos">Ver serviços e preços</a>
+          </div>
+          <p class="hero__fundacao">Desde 2022 <span class="nota-demo">(data fictícia)</span></p>
+        </div>
+
+        <!-- Lugar do poste 3D. Por enquanto, versão estática em SVG (também serve de fallback). -->
+        <div class="hero__poste" aria-hidden="true">
+          <svg class="poste" viewBox="0 0 80 400" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <pattern id="listras" width="80" height="96" patternUnits="userSpaceOnUse" patternTransform="skewY(-30)">
+                <rect class="poste__branco" width="80" height="96"/>
+                <rect class="poste__ambar" y="0" width="80" height="24"/>
+                <rect class="poste__carvao" y="48" width="80" height="24"/>
+              </pattern>
+              <clipPath id="vidro"><rect x="16" y="60" width="48" height="280" rx="4"/></clipPath>
+            </defs>
+            <rect class="poste__ponta" x="34" y="0" width="12" height="20"/>
+            <path d="M12 44 Q12 22 40 20 Q68 22 68 44 L68 60 L12 60 Z" class="poste__tampa"/>
+            <rect x="16" y="60" width="48" height="280" fill="url(#listras)" clip-path="url(#vidro)"/>
+            <rect x="16" y="60" width="48" height="280" rx="4" class="poste__aro"/>
+            <path d="M12 340 L68 340 L68 356 Q68 378 40 380 Q12 378 12 356 Z" class="poste__tampa"/>
+            <rect class="poste__ponta" x="34" y="380" width="12" height="20"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVIÇOS -->
+    <section class="secao" id="servicos" aria-labelledby="servicos-titulo">
+      <div class="secao__interno">
+        <h2 class="secao__titulo" id="servicos-titulo">Serviços e preços</h2>
+        <!-- Traço da navalha: será desenhado com GSAP DrawSVG na etapa de movimento. -->
+        <svg class="traco-navalha" viewBox="0 0 400 16" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M2 12 C 120 2, 260 2, 398 8"/>
+        </svg>
+        <p class="secao__intro">Preço fechado, sem surpresa no fim. Valores de exemplo. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+
+        <ul class="cardapio">
+          <li class="cardapio__item">
+            <div>
+              <h3 class="cardapio__nome">Corte</h3>
+              <p class="cardapio__desc">Tesoura, máquina ou os dois. Lavagem e finalização inclusas.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">40 min</span> <span class="cardapio__preco">R$ 45</span></p>
+          </li>
+          <li class="cardapio__item">
+            <div>
+              <h3 class="cardapio__nome">Barba com toalha quente</h3>
+              <p class="cardapio__desc">Toalha quente, navalha e pós-barba.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">30 min</span> <span class="cardapio__preco">R$ 35</span></p>
+          </li>
+          <li class="cardapio__item">
+            <div>
+              <h3 class="cardapio__nome">Corte e barba</h3>
+              <p class="cardapio__desc">Os dois serviços numa cadeira só.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">70 min</span> <span class="cardapio__preco">R$ 70</span></p>
+          </li>
+          <li class="cardapio__item">
+            <div>
+              <h3 class="cardapio__nome">Pezinho e contorno</h3>
+              <p class="cardapio__desc">Para manter o corte em dia entre uma visita e outra.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">15 min</span> <span class="cardapio__preco">R$ 20</span></p>
+          </li>
+          <li class="cardapio__item">
+            <div>
+              <h3 class="cardapio__nome">Sobrancelha na navalha</h3>
+              <p class="cardapio__desc">Só alinha. Ninguém vai notar que você fez.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">10 min</span> <span class="cardapio__preco">R$ 15</span></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RITUAL -->
+    <section class="secao secao--faixa" id="ritual" aria-labelledby="ritual-titulo">
+      <div class="secao__interno">
+        <h2 class="secao__titulo" id="ritual-titulo">O ritual</h2>
+        <p class="secao__intro">Todo atendimento segue os mesmos três passos. Sem pressa, sem pular nenhum.</p>
+        <ol class="ritual">
+          <li class="ritual__passo">
+            <svg class="icone icone--grande" aria-hidden="true"><use href="#i-cafe"/></svg>
+            <h3 class="ritual__nome">Recepção</h3>
+            <p>Café ou água enquanto você conta como quer o corte. A gente escuta antes de pegar a tesoura.</p>
+          </li>
+          <li class="ritual__passo">
+            <svg class="icone icone--grande" aria-hidden="true"><use href="#i-chama"/></svg>
+            <h3 class="ritual__nome">Toalha quente</h3>
+            <p>Amacia a barba e abre os poros. É o que faz a navalha passar sem irritar.</p>
+          </li>
+          <li class="ritual__passo">
+            <svg class="icone icone--grande" aria-hidden="true"><use href="#i-tesoura"/></svg>
+            <h3 class="ritual__nome">Acabamento</h3>
+            <p>Contorno na navalha, pós-barba e o espelho na sua mão. Só termina quando você aprova.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- BARBEIROS -->
+    <section class="secao" id="barbeiros" aria-labelledby="barbeiros-titulo">
+      <div class="secao__interno">
+        <h2 class="secao__titulo" id="barbeiros-titulo">Quem corta</h2>
+        <p class="secao__intro">Seu Raimundo abriu a porta e ensinou o ofício ao filho. Hoje é o filho quem toca a casa, com mais um barbeiro do lado. <span class="nota-demo">[CONFIRMAR: nomes e história — personagens fictícios]</span></p>
+
+        <div class="barbeiros">
+          <article class="barbeiro">
+            <div class="foto-exemplo foto-exemplo--retrato" role="img" aria-label="Foto de exemplo do barbeiro">
+              <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pessoa"/></svg>
+              <span>[FOTO DE EXEMPLO]</span>
+            </div>
+            <h3 class="barbeiro__nome">[NOME DO FILHO]</h3>
+            <p class="barbeiro__papel">Toca a casa</p>
+            <p>Aprendeu na cadeira do pai. Gosta de corte clássico com acabamento na tesoura. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+          </article>
+          <article class="barbeiro">
+            <div class="foto-exemplo foto-exemplo--retrato" role="img" aria-label="Foto de exemplo do barbeiro">
+              <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pessoa"/></svg>
+              <span>[FOTO DE EXEMPLO]</span>
+            </div>
+            <h3 class="barbeiro__nome">[NOME DO SEGUNDO BARBEIRO]</h3>
+            <p class="barbeiro__papel">Barbeiro</p>
+            <p>Mão firme na navalha. É quem você procura para barba. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+          </article>
+        </div>
+
+        <div class="casa">
+          <div class="casa__bloco">
+            <h3 class="casa__titulo">A regra da casa</h3>
+            <p>Hora marcada é hora marcada. Chegou, sentou. Se atrasar mais de 15 minutos, a gente remarca para não atrasar o próximo. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+          </div>
+          <div class="casa__bloco">
+            <h3 class="casa__titulo">Coisa do bairro</h3>
+            <p>O café vem da padaria da esquina, passado na hora. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALERIA -->
+    <section class="secao secao--faixa" id="galeria" aria-labelledby="galeria-titulo">
+      <div class="secao__interno">
+        <h2 class="secao__titulo" id="galeria-titulo">Galeria</h2>
+        <p class="secao__intro">Cortes feitos aqui. <span class="nota-demo">[FOTOS DE EXEMPLO]</span></p>
+        <ul class="galeria">
+          <li class="galeria__item galeria__item--destaque">
+            <figure>
+              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: degradê baixo"><span>[FOTO DE EXEMPLO]</span></div>
+              <figcaption>Degradê baixo</figcaption>
+            </figure>
+          </li>
+          <li class="galeria__item">
+            <figure>
+              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: barba desenhada"><span>[FOTO DE EXEMPLO]</span></div>
+              <figcaption>Barba desenhada</figcaption>
+            </figure>
+          </li>
+          <li class="galeria__item">
+            <figure>
+              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: corte social na tesoura"><span>[FOTO DE EXEMPLO]</span></div>
+              <figcaption>Social na tesoura</figcaption>
+            </figure>
+          </li>
+          <li class="galeria__item">
+            <figure>
+              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: navalha no contorno"><span>[FOTO DE EXEMPLO]</span></div>
+              <figcaption>Contorno na navalha</figcaption>
+            </figure>
+          </li>
+          <li class="galeria__item">
+            <figure>
+              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: a cadeira da casa"><span>[FOTO DE EXEMPLO]</span></div>
+              <figcaption>A cadeira</figcaption>
+            </figure>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- HORÁRIO E MAPA -->
+    <section class="secao" id="horario" aria-labelledby="horario-titulo">
+      <div class="secao__interno local">
+        <div class="local__texto">
+          <h2 class="secao__titulo" id="horario-titulo">Horário e endereço</h2>
+          <table class="horario">
+            <caption class="visualmente-oculto">Horário de funcionamento (exemplo)</caption>
+            <tbody>
+              <tr><th scope="row">Terça a sexta</th><td>9h às 20h</td></tr>
+              <tr><th scope="row">Sábado</th><td>8h às 18h</td></tr>
+              <tr><th scope="row">Domingo e segunda</th><td>Fechado</td></tr>
+            </tbody>
+          </table>
+          <p class="nota-demo">Horário de exemplo. [TEXTO DE EXEMPLO]</p>
+          <address class="endereco">
+            <svg class="icone" aria-hidden="true"><use href="#i-pino"/></svg>
+            <span>[ENDEREÇO DE EXEMPLO], [BAIRRO], [CIDADE]</span>
+          </address>
+          <!-- TROCAR: número de WhatsApp fictício -->
+          <a class="botao" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+            <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
+            Agendar pelo WhatsApp
+          </a>
+        </div>
+        <div class="foto-exemplo local__mapa" role="img" aria-label="Mapa de exemplo">
+          <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pino"/></svg>
+          <span>[MAPA DE EXEMPLO]</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape__interno">
+      <p class="rodape__marca">Ofício 22</p>
+      <p>Barbearia de bairro. Hora marcada, sem fila.</p>
+      <!-- TROCAR: número de WhatsApp fictício -->
+      <p><a class="link" href="https://wa.me/5586999999999" target="_blank" rel="noopener">WhatsApp (86) 99999-9999</a> <span class="nota-demo">(número fictício)</span></p>
+      <p class="rodape__legal">Projeto de demonstração Magnus. Marca, pessoas, história, endereço, telefone e preços são fictícios.</p>
+    </div>
+  </footer>
+
+  <!-- Barra fixa de agendamento (só no celular) -->
+  <div class="barra-agendar">
+    <!-- TROCAR: número de WhatsApp fictício -->
+    <a class="botao botao--largo" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+      <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
+      Agendar pelo WhatsApp
+    </a>
+  </div>
+
+  <p class="selo-demo">Projeto de demonstração Magnus</p>
+</body>
+</html>
