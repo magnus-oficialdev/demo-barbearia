@@ -1,5 +1,7 @@
 # Direções visuais — demo-barbearia
 
+**Escolhida: Direção A — "Poste Aceso"** (2026-10-13). Tokens e fontes aplicados ao `.ux-profile.md`; eyebrows removidos do perfil.
+
 > **Atenção:** o briefing da "seção 6" não veio — a mensagem trouxe o texto-modelo `{{COLE AQUI O BRIEFING DA SEÇÃO 6 E AS SUAS REFERÊNCIAS}}` sem preencher. Este documento usa como briefing apenas o que já está registrado: `.ux-profile.md` (preto fosco/cinza, amarelo, branco; voz direta em PT-BR; WCAG AA; Lucide) e as duas imagens enviadas.
 > **Proposta de assunto (a confirmar):** site de uma barbearia de bairro; público: homens 20–45 que decidem pelo celular; trabalho principal da página: levar a pessoa a **agendar um horário** em poucos toques.
 
