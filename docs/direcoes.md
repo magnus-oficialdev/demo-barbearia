@@ -101,7 +101,7 @@
 |  (metade de cima desliza) |  (revelada pelo corte)   |       |
 |  BEM FEITO.               +--------------------------+       |
 |                                                              |
-|  Desde 2022 na Rua X.     [ $30 corte ] [ $20 barba ]        |
+|  Desde 2022 na Rua X.     [ R$ 30 corte ] [ R$ 20 barba ]        |
 |                            (etiquetas pretas c/ preço amarelo)|
 +--------------------------------------------------------------+
 ```
