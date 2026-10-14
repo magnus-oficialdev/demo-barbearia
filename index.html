@@ -8,9 +8,10 @@
   <meta name="theme-color" content="#161616">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700&family=Yellowtail&display=swap">
   <link rel="stylesheet" href="css/estilo.css">
   <script>
+    document.documentElement.classList.add('js');
     // Esconde o texto do hero só enquanto a entrada em GSAP não começa.
     // Rede de segurança: em no máximo 1,5 s o texto aparece, mesmo se o GSAP
     // ou o principal.js atrasarem ou falharem. Com movimento reduzido, nada é escondido.
@@ -42,6 +43,7 @@
   <script src="vendor/gsap@3.15.0/gsap.min.js" defer></script>
   <script src="vendor/gsap@3.15.0/DrawSVGPlugin.min.js" defer></script>
   <script src="js/principal.js" defer></script>
+  <script src="js/agendar.js" defer></script>
 </head>
 <body>
   <!-- Ícones Lucide (lucide-static v1.56.0, ISC) -->
@@ -52,6 +54,8 @@
     <symbol id="i-tesoura" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></symbol>
     <symbol id="i-relogio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
     <symbol id="i-pino" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-alerta" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
     <symbol id="i-pessoa" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
   </svg>
 
@@ -69,7 +73,7 @@
           <li><a href="#horario">Horário</a></li>
         </ul>
       </nav>
-      <a class="botao botao--pequeno" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+      <a class="botao botao--pequeno" href="#agendar">
         <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
         Agendar
       </a>
@@ -104,12 +108,12 @@
         </div>
 
         <div class="hero__texto">
-          <p class="hero__chamada" data-entrada>Barbearia de bairro. Hora marcada, sem fila.</p>
+          <p class="hero__chamada" data-entrada>Barbearia de bairro. Hora marcada, <span class="destaque">sem fila</span>.</p>
           <p class="hero__apoio" data-entrada>Dois barbeiros, uma cadeira de cada vez. Você marca pelo WhatsApp, chega no horário e senta.</p>
           <div class="hero__acoes" data-entrada>
-            <a class="botao" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
-              <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
-              Agendar pelo WhatsApp
+            <a class="botao" href="#agendar">
+              <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
+              Agendar horário
             </a>
             <a class="link" href="#servicos">Ver serviços e preços</a>
           </div>
@@ -132,21 +136,21 @@
         </div>
 
         <ul class="cardapio" data-revelar>
-          <li class="cardapio__item">
+          <li class="cardapio__item" data-servico="Corte" data-minutos="40" data-preco="45">
             <div>
               <h3 class="cardapio__nome">Corte</h3>
               <p class="cardapio__desc">Tesoura, máquina ou os dois. Lavagem e finalização inclusas.</p>
             </div>
             <p class="cardapio__info"><span class="cardapio__tempo">40 min</span> <span class="cardapio__preco">R$ 45</span></p>
           </li>
-          <li class="cardapio__item">
+          <li class="cardapio__item" data-servico="Barba com toalha quente" data-minutos="30" data-preco="35">
             <div>
               <h3 class="cardapio__nome">Barba com toalha quente</h3>
               <p class="cardapio__desc">Toalha quente, navalha e pós-barba.</p>
             </div>
             <p class="cardapio__info"><span class="cardapio__tempo">30 min</span> <span class="cardapio__preco">R$ 35</span></p>
           </li>
-          <li class="cardapio__item cardapio__item--destaque">
+          <li class="cardapio__item cardapio__item--destaque" data-servico="Corte e barba" data-minutos="70" data-preco="70">
             <div>
               <p class="cardapio__selo">Combo da casa</p>
               <h3 class="cardapio__nome">Corte e barba</h3>
@@ -154,14 +158,14 @@
             </div>
             <p class="cardapio__info"><span class="cardapio__tempo">70 min</span> <span class="cardapio__preco">R$ 70</span></p>
           </li>
-          <li class="cardapio__item">
+          <li class="cardapio__item" data-servico="Pezinho e contorno" data-minutos="15" data-preco="20">
             <div>
               <h3 class="cardapio__nome">Pezinho e contorno</h3>
               <p class="cardapio__desc">Para manter o corte em dia entre uma visita e outra.</p>
             </div>
             <p class="cardapio__info"><span class="cardapio__tempo">15 min</span> <span class="cardapio__preco">R$ 20</span></p>
           </li>
-          <li class="cardapio__item">
+          <li class="cardapio__item" data-servico="Sobrancelha na navalha" data-minutos="10" data-preco="15">
             <div>
               <h3 class="cardapio__nome">Sobrancelha na navalha</h3>
               <p class="cardapio__desc">Só alinha. Ninguém vai notar que você fez.</p>
@@ -172,8 +176,107 @@
       </div>
     </section>
 
+    <!-- AGENDAR — a "comanda": serviço, barbeiro, dia e horário; a mensagem sai pronta no WhatsApp.
+         Os serviços vêm do cardápio e os horários da tabela de funcionamento (data-*), uma fonte só. -->
+    <section class="secao secao--faixa agendar" id="agendar" aria-labelledby="agendar-titulo">
+      <div class="secao__interno">
+        <div class="agendar__cabeca" data-revelar>
+          <h2 class="secao__titulo" id="agendar-titulo">Marque <span class="destaque">seu horário</span></h2>
+          <p class="secao__intro">Escolha o serviço, o barbeiro e a hora. A mensagem sai pronta no WhatsApp e a gente confirma por lá.</p>
+        </div>
+
+        <noscript>
+          <p class="agendar__sem-js">Para escolher o horário aqui, ative o JavaScript. Ou
+            <a class="link" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022.">chame direto no WhatsApp</a>.</p>
+        </noscript>
+
+        <form class="comanda" id="form-agendar" novalidate data-revelar>
+          <div class="comanda__escolhas">
+            <fieldset class="grupo">
+              <legend class="grupo__titulo">Serviço</legend>
+              <div class="opcoes opcoes--servico" data-opcoes="servico"></div>
+            </fieldset>
+
+            <fieldset class="grupo">
+              <legend class="grupo__titulo">Barbeiro</legend>
+              <div class="opcoes opcoes--barbeiro">
+                <label class="opcao"><input type="radio" name="barbeiro" value="Tanto faz" checked>
+                  <span class="opcao__corpo"><span class="opcao__nome">Tanto faz</span><span class="opcao__meta">Quem estiver livre</span>
+                  <svg class="icone opcao__marca" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+                <label class="opcao"><input type="radio" name="barbeiro" value="Davi">
+                  <span class="opcao__corpo"><span class="opcao__nome">Davi</span><span class="opcao__meta">Corte clássico</span>
+                  <svg class="icone opcao__marca" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+                <label class="opcao"><input type="radio" name="barbeiro" value="Tiago">
+                  <span class="opcao__corpo"><span class="opcao__nome">Tiago</span><span class="opcao__meta">Barba e navalha</span>
+                  <svg class="icone opcao__marca" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="grupo">
+              <legend class="grupo__titulo">Dia</legend>
+              <div class="opcoes opcoes--dia" data-opcoes="dia"></div>
+            </fieldset>
+
+            <fieldset class="grupo" id="grupo-hora" aria-describedby="hora-erro">
+              <legend class="grupo__titulo">Horário</legend>
+              <div class="opcoes opcoes--hora" data-opcoes="hora"></div>
+              <p class="aviso-erro" id="hora-erro" hidden>
+                <svg class="icone" aria-hidden="true"><use href="#i-alerta"/></svg>
+                <span>Escolha um horário para a gente reservar a cadeira.</span>
+              </p>
+            </fieldset>
+          </div>
+
+          <!-- A comanda (resumo): faixa de poste em cima e linha de "corte" com a tesoura -->
+          <div class="comanda__resumo">
+            <div class="faixa-poste" aria-hidden="true"></div>
+            <p class="comanda__titulo">Sua comanda</p>
+            <dl class="comanda__lista">
+              <div><dt>Serviço</dt><dd data-resumo="servico">—</dd></div>
+              <div><dt>Barbeiro</dt><dd data-resumo="barbeiro">Tanto faz</dd></div>
+              <div><dt>Quando</dt><dd data-resumo="quando">Escolha o dia e o horário</dd></div>
+              <div><dt>Valor</dt><dd data-resumo="valor">—</dd></div>
+            </dl>
+            <div class="comanda__corte" aria-hidden="true">
+              <svg class="icone"><use href="#i-tesoura"/></svg>
+            </div>
+
+            <div class="comanda__envio" data-etapa="formulario">
+              <div class="campo">
+                <label class="campo__rotulo" for="agendar-nome">Seu nome</label>
+                <input class="campo__entrada" id="agendar-nome" name="nome" type="text" autocomplete="given-name"
+                       required maxlength="60" aria-describedby="nome-erro">
+                <p class="aviso-erro" id="nome-erro" hidden>
+                  <svg class="icone" aria-hidden="true"><use href="#i-alerta"/></svg>
+                  <span>Escreva seu nome para a gente saber quem vem.</span>
+                </p>
+              </div>
+              <p class="comanda__rascunho" data-rascunho hidden>
+                Retomamos as escolhas da sua última visita. <button class="link link--botao" type="button" data-descartar>Limpar</button>
+              </p>
+              <button class="botao botao--largo" type="submit">
+                <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
+                Agendar pelo WhatsApp
+              </button>
+              <p class="comanda__nota">Horários de exemplo. A confirmação é feita pelo WhatsApp. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+            </div>
+
+            <div class="comanda__enviada" data-etapa="enviado" role="status" hidden>
+              <p class="comanda__enviada-titulo">Mensagem pronta no WhatsApp.</p>
+              <p>Toque em enviar por lá. A gente responde confirmando o horário.</p>
+              <p><a class="link" data-link-whatsapp href="https://wa.me/558699436939" target="_blank" rel="noopener">Abrir o WhatsApp de novo</a></p>
+              <button class="link link--botao" type="button" data-de-novo>Marcar outro horário</button>
+            </div>
+          </div>
+        </form>
+
+        <p class="agendar__conversar">Prefere conversar antes?
+          <a class="link" href="https://wa.me/558699436939" target="_blank" rel="noopener">Chame no WhatsApp</a></p>
+      </div>
+    </section>
+
     <!-- RITUAL — passos ligados por uma linha (sequência real) + a foto da toalha quente. -->
-    <section class="secao secao--faixa" id="ritual" aria-labelledby="ritual-titulo">
+    <section class="secao" id="ritual" aria-labelledby="ritual-titulo">
       <div class="secao__interno ritual-grade">
         <div class="ritual-grade__texto">
         <div data-revelar>
@@ -203,7 +306,7 @@
     </section>
 
     <!-- QUEM CORTA — texto longo + imagem grande. Destaque: o retrato de quem toca a casa. -->
-    <section class="secao" id="barbeiros" aria-labelledby="barbeiros-titulo">
+    <section class="secao secao--faixa" id="barbeiros" aria-labelledby="barbeiros-titulo">
       <div class="secao__interno equipe">
         <div class="equipe__texto" data-revelar>
           <h2 class="secao__titulo" id="barbeiros-titulo">Quem corta</h2>
@@ -220,6 +323,14 @@
 
         <div class="equipe__fotos" data-revelar>
           <article class="barbeiro barbeiro--principal">
+            <!-- Selo da casa (elemento temático) -->
+            <svg class="selo" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+              <defs><path id="selo-circulo" d="M60 60 m-43 0 a43 43 0 1 1 86 0 a43 43 0 1 1 -86 0"/></defs>
+              <circle class="selo__fundo" cx="60" cy="60" r="58"/>
+              <circle class="selo__aro" cx="60" cy="60" r="31"/>
+              <text class="selo__texto"><textPath href="#selo-circulo" textLength="268" lengthAdjust="spacing">OFÍCIO 22 • DE PAI PRA FILHO • DESDE 2022 •</textPath></text>
+              <use class="selo__tesoura" href="#i-tesoura" x="46" y="46" width="28" height="28"/>
+            </svg>
             <img class="foto foto--retrato" src="img/barbeiro-davi.webp" width="768" height="960" loading="lazy" decoding="async"
                  alt="Davi, de avental escuro e braços cruzados, segurando uma tesoura.">
             <h3 class="barbeiro__nome">Davi</h3>
@@ -239,13 +350,13 @@
     <section class="regra" aria-labelledby="regra-titulo">
       <div class="secao__interno" data-revelar>
         <h2 class="regra__titulo" id="regra-titulo">A regra da casa</h2>
-        <p class="regra__frase">Hora marcada é hora marcada.</p>
+        <p class="regra__frase">Hora marcada é <span class="destaque">hora marcada</span>.</p>
         <p class="regra__apoio">Chegou, sentou. Se atrasar mais de 15 minutos, a gente remarca para não atrasar o próximo.</p>
       </div>
     </section>
 
     <!-- GALERIA — largo, de ponta a ponta. Destaque: uma foto grande. -->
-    <section class="secao secao--faixa" id="galeria" aria-labelledby="galeria-titulo">
+    <section class="secao" id="galeria" aria-labelledby="galeria-titulo">
       <div class="secao__interno" data-revelar>
         <h2 class="secao__titulo" id="galeria-titulo">Galeria</h2>
         <p class="secao__intro">O tipo de corte e de acabamento que sai das nossas cadeiras.</p>
@@ -286,15 +397,15 @@
     </section>
 
     <!-- HORÁRIO E MAPA — dividido. Destaque: horário + botão de agendar. -->
-    <section class="secao" id="horario" aria-labelledby="horario-titulo">
+    <section class="secao secao--faixa" id="horario" aria-labelledby="horario-titulo">
       <div class="secao__interno local">
         <div class="local__texto" data-revelar>
           <h2 class="secao__titulo" id="horario-titulo">Horário e endereço</h2>
           <table class="horario">
             <caption class="visualmente-oculto">Horário de funcionamento (exemplo)</caption>
             <tbody>
-              <tr><th scope="row">Terça a sexta</th><td>9h às 20h</td></tr>
-              <tr><th scope="row">Sábado</th><td>8h às 18h</td></tr>
+              <tr data-dias="2 3 4 5" data-abre="9" data-fecha="20"><th scope="row">Terça a sexta</th><td>9h às 20h</td></tr>
+              <tr data-dias="6" data-abre="8" data-fecha="18"><th scope="row">Sábado</th><td>8h às 18h</td></tr>
               <tr><th scope="row">Domingo e segunda</th><td>Fechado</td></tr>
             </tbody>
           </table>
@@ -304,10 +415,10 @@
             <!-- CONFIRMAR: número e bairro -->
             <span>Av. Raul Lopes — Teresina, PI</span>
           </address>
-          <p class="local__chamada">Escolha o horário pelo WhatsApp. A gente confirma na hora.</p>
-          <a class="botao" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
-            <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
-            Agendar pelo WhatsApp
+          <p class="local__chamada">Escolha o horário na comanda e mande pelo WhatsApp. A gente confirma por lá.</p>
+          <a class="botao" href="#agendar">
+            <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
+            Agendar horário
           </a>
         </div>
         <figure class="local__foto" data-revelar>
@@ -326,6 +437,7 @@
   </main>
 
   <footer class="rodape">
+    <div class="faixa-poste" aria-hidden="true"></div>
     <div class="rodape__interno">
       <p class="rodape__marca">Ofício 22</p>
       <p>Barbearia de bairro. Hora marcada, sem fila.</p>
@@ -337,9 +449,9 @@
 
   <!-- Barra fixa de agendamento (só no celular). Aparece depois que o botão do hero sai da tela. -->
   <div class="barra-agendar">
-    <a class="botao botao--largo" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
-      <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
-      Agendar pelo WhatsApp
+    <a class="botao botao--largo" href="#agendar">
+      <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
+      Agendar horário
     </a>
   </div>
 

@@ -29,6 +29,7 @@
   /* Tipografia: 2 famílias, 3 pesos */
   --fonte-titulo: "Big Shoulders Display", "Big Shoulders reserva", "Arial Narrow", sans-serif;
   --fonte-texto: "Barlow", system-ui, sans-serif;
+  --fonte-destaque: "Yellowtail", "Brush Script MT", cursive; /* letreiro pintado: só em palavras específicas */
   --peso-regular: 400;
   --peso-semi: 600;
   --peso-titulo: 700;
@@ -73,6 +74,8 @@
   --foto-recuo: clamp(0rem, calc(29rem - 24.5vw), 14rem);
   --largura-ampla: 1440px;        /* galeria de ponta a ponta */
   --largura-traco: 320px;         /* assinatura: traço da navalha */
+  --selo: 96px;                   /* selo circular da casa */
+  --listra: 8px;                  /* faixa de poste: largura de cada listra */
   --traco-navalha: 3;
   --altura-barra: calc(var(--alvo-toque) + 2 * var(--esp-2) + var(--borda-fina));
   --alvo-toque: 48px;
@@ -142,6 +145,9 @@ body {
 }
 
 img, svg { display: block; max-width: 100%; }
+
+/* "hidden" sempre vence o display dos componentes (avisos, etapas da comanda) */
+[hidden] { display: none !important; }
 
 ul, ol { padding: 0; list-style: none; }
 
@@ -498,7 +504,7 @@ a { color: inherit; }
   height: var(--esp-6);
   border: var(--borda-foco) solid var(--cor-acento);
   border-radius: var(--raio-redondo);
-  background: var(--cor-superficie);
+  background: var(--cor-fundo);
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-titulo);
   font-size: var(--texto-3);
@@ -539,10 +545,9 @@ a { color: inherit; }
   max-width: var(--largura-texto);
   margin-top: var(--esp-5);
   padding: var(--esp-4) var(--esp-3);
-  background: var(--cor-superficie);
+  background: var(--cor-fundo);
   border: var(--borda-fina) solid var(--cor-borda);
   border-radius: var(--raio-2);
-  box-shadow: var(--sombra-borda);
   color: var(--cor-texto-suave);
 }
 .bairro__titulo {
@@ -554,7 +559,7 @@ a { color: inherit; }
 }
 .equipe__fotos { display: grid; gap: var(--esp-5); }
 .barbeiro--segundo { width: 72%; justify-self: end; }
-.barbeiro { color: var(--cor-texto-suave); }
+.barbeiro { position: relative; color: var(--cor-texto-suave); }
 .barbeiro__nome {
   margin-top: var(--esp-3);
   font-size: var(--texto-2);
@@ -612,7 +617,7 @@ a { color: inherit; }
   width: 100%;
   margin-top: var(--esp-4);
   border-collapse: collapse;
-  background: var(--cor-superficie);
+  background: var(--cor-fundo);
   border: var(--borda-fina) solid var(--cor-borda);
 }
 .horario th,
@@ -645,11 +650,233 @@ a { color: inherit; }
 }
 .local__legenda .link { gap: var(--esp-2); font-size: var(--texto-corpo); }
 
-/* ============ RODAPÉ ============ */
-.rodape {
-  border-top: var(--borda-fina) solid var(--cor-borda);
-  color: var(--cor-texto-suave);
+/* ============ DESTAQUE TIPOGRÁFICO ============ */
+/* Letreiro pintado à mão (Yellowtail) para UMA palavra ou expressão por bloco.
+   Nunca em parágrafos, botões ou rótulos. */
+.destaque {
+  font-family: var(--fonte-destaque);
+  font-weight: var(--peso-regular);
+  font-size: 1.15em;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--cor-acento);
 }
+.hero__chamada .destaque { font-size: 1.3em; }
+.regra .destaque { color: var(--cor-sobre-acento); }
+
+/* ============ ELEMENTOS TEMÁTICOS ============ */
+/* Faixa de poste de barbearia: listras âmbar, branco e carvão (nunca vermelho e azul) */
+.faixa-poste {
+  height: var(--esp-2);
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--cor-acento) 0 var(--listra),
+    var(--cor-texto) var(--listra) calc(2 * var(--listra)),
+    var(--cor-fundo) calc(2 * var(--listra)) calc(3 * var(--listra)),
+    var(--cor-texto) calc(3 * var(--listra)) calc(4 * var(--listra))
+  );
+}
+
+/* Selo circular da casa, no canto do retrato de quem toca a casa */
+.selo {
+  position: absolute;
+  top: var(--esp-3);
+  right: var(--esp-3);
+  z-index: 1;
+  width: var(--selo);
+  height: var(--selo);
+}
+.selo__fundo { fill: var(--cor-fundo); stroke: var(--cor-acento); stroke-width: var(--borda-foco); }
+.selo__aro { fill: none; stroke: var(--cor-borda); stroke-width: var(--borda-fina); }
+.selo__texto {
+  fill: var(--cor-acento);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-meta);
+  letter-spacing: var(--espacamento-titulo);
+}
+.selo__tesoura {
+  fill: none;
+  stroke: var(--cor-texto);
+  stroke-width: var(--traco-icone);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============ AGENDAR (a comanda) ============ */
+html:not(.js) .comanda { display: none; } /* sem JS: só o link direto do <noscript> */
+.agendar__sem-js,
+.agendar__conversar { margin-top: var(--esp-4); color: var(--cor-texto-suave); }
+
+.comanda {
+  display: grid;
+  gap: var(--esp-5);
+  margin-top: var(--esp-5);
+}
+.grupo { min-width: 0; margin: 0; padding: 0; border: 0; }
+.grupo + .grupo { margin-top: var(--esp-5); }
+.grupo__titulo {
+  margin-bottom: var(--esp-2);
+  padding: 0;
+  font-size: var(--texto-1);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+}
+.opcoes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-2);
+}
+.opcoes--barbeiro { grid-template-columns: 1fr; }
+.opcoes--dia { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.opcoes--hora { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* Rádio de verdade por baixo (teclado e leitor de tela), cartão por cima */
+.opcao { position: relative; display: block; cursor: pointer; }
+.opcao input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.opcao__corpo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--esp-1);
+  height: 100%;
+  min-height: var(--alvo-toque);
+  padding: var(--esp-2) var(--esp-5) var(--esp-2) var(--esp-3);
+  background: var(--cor-fundo);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-1);
+}
+.opcoes--hora .opcao__corpo { align-items: center; padding-inline: var(--esp-2); }
+.opcao__nome { font-weight: var(--peso-semi); line-height: var(--entrelinha-titulo); }
+.opcao__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--esp-2);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-secundario);
+}
+.opcao__marca {
+  position: absolute;
+  top: var(--esp-2);
+  right: var(--esp-2);
+  color: var(--cor-acento);
+  visibility: hidden;
+}
+.opcoes--dia .opcao__marca,
+.opcoes--hora .opcao__marca { display: none; }
+.opcao:hover .opcao__corpo { border-color: var(--cor-texto-suave); }
+/* Escolhido: borda âmbar + marca de "check" (não depende só da cor) */
+.opcao input:checked + .opcao__corpo {
+  border-color: var(--cor-acento);
+  box-shadow: inset 0 0 0 var(--borda-fina) var(--cor-acento);
+}
+.opcao input:checked + .opcao__corpo .opcao__marca { visibility: visible; }
+/* Dia e horário (botões pequenos): o escolhido fica preenchido de âmbar */
+.opcoes--dia .opcao__corpo { padding-right: var(--esp-3); }
+.opcoes--dia .opcao input:checked + .opcao__corpo,
+.opcoes--hora .opcao input:checked + .opcao__corpo { background: var(--cor-acento); color: var(--cor-sobre-acento); }
+.opcoes--dia .opcao input:checked + .opcao__corpo .opcao__meta { color: var(--cor-sobre-acento); }
+.opcao input:focus-visible + .opcao__corpo {
+  outline: var(--borda-foco) solid var(--cor-acento);
+  outline-offset: var(--borda-foco);
+}
+
+.aviso-erro {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  margin-top: var(--esp-2);
+  font-size: var(--texto-secundario);
+}
+.aviso-erro .icone { color: var(--cor-acento); }
+.grupo--erro .opcoes--hora .opcao__corpo { border-color: var(--cor-acento); }
+
+/* A comanda: um "ticket" com faixa de poste no topo e linha de corte com a tesoura */
+.comanda__resumo {
+  align-self: start;
+  overflow: hidden;
+  background: var(--cor-fundo);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+}
+.comanda__titulo {
+  margin: var(--esp-4) var(--esp-4) 0;
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-3);
+  line-height: var(--entrelinha-titulo);
+  letter-spacing: var(--espacamento-titulo);
+  text-transform: uppercase;
+}
+.comanda__lista { margin: var(--esp-3) var(--esp-4) 0; }
+.comanda__lista > div {
+  display: grid;
+  grid-template-columns: var(--esp-9) 1fr;
+  gap: var(--esp-3);
+  padding-block: var(--esp-2);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+}
+.comanda__lista dt { color: var(--cor-texto-suave); font-size: var(--texto-secundario); }
+.comanda__lista dd { margin: 0; font-weight: var(--peso-semi); }
+.comanda__corte {
+  position: relative;
+  margin: var(--esp-4) 0 var(--esp-3);
+  border-top: var(--borda-foco) dashed var(--cor-borda);
+}
+.comanda__corte .icone {
+  position: absolute;
+  top: 0;
+  left: var(--esp-3);
+  transform: translateY(-50%) rotate(-90deg);
+  padding-inline: var(--esp-1);
+  background: var(--cor-fundo);
+  color: var(--cor-texto-suave);
+  box-sizing: content-box;
+}
+.comanda__envio,
+.comanda__enviada { display: grid; gap: var(--esp-3); padding: 0 var(--esp-4) var(--esp-4); }
+.comanda__enviada-titulo {
+  font-size: var(--texto-2);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+}
+.comanda__nota,
+.comanda__rascunho { color: var(--cor-texto-suave); font-size: var(--texto-secundario); }
+
+.campo { display: grid; gap: var(--esp-1); }
+.campo__rotulo { font-weight: var(--peso-semi); }
+.campo__entrada {
+  min-height: var(--alvo-toque);
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--cor-superficie);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-1);
+  color: var(--cor-texto);
+  font: inherit;
+}
+.campo__entrada:focus-visible { outline: var(--borda-foco) solid var(--cor-acento); outline-offset: 0; }
+.campo__entrada[aria-invalid] { border-color: var(--cor-acento); }
+
+/* Link com cara de link, mas que é um botão (ações na própria página) */
+.link--botao {
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ============ RODAPÉ ============ */
+.rodape { color: var(--cor-texto-suave); }
 .rodape__interno {
   display: grid;
   gap: var(--esp-2);
@@ -796,6 +1023,19 @@ a { color: inherit; }
   }
 
   .regra { padding-block: var(--esp-7); }
+
+  :root { --selo: 120px; }
+  .selo { top: calc(-1 * var(--esp-5)); right: auto; left: calc(-1 * var(--esp-6)); }
+
+  .comanda {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--esp-6);
+  }
+  .comanda__resumo { position: sticky; top: calc(var(--altura-topo) + var(--esp-3)); }
+  .opcoes--servico,
+  .opcoes--barbeiro { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .opcoes--dia { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .opcoes--hora { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 
   .ritual-grade {
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);

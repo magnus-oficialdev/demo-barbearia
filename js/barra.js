@@ -2,12 +2,13 @@
 // Arquivo separado e carregado ANTES do GSAP: não depende dele e precisa agir cedo,
 // senão em rede lenta a rede de segurança do <head> mostra a barra sobre o hero.
 //
-// A barra só aparece quando nenhum outro "Agendar pelo WhatsApp" está na tela:
-// depois que o botão do hero sai pelo topo e enquanto o botão da seção de horário não aparece.
+// A barra só aparece quando nenhum outro botão de agendar está na tela: depois que o botão
+// do hero sai pelo topo, e some de novo na comanda de agendamento e no botão da seção de horário.
 (function () {
   const raiz = document.documentElement;
   const botaoHero = document.querySelector('.hero__acoes .botao');
-  const botaoHorario = document.querySelector('.local__texto .botao');
+  // Elementos que, visíveis, tornam a barra redundante
+  const escondem = [...document.querySelectorAll('#agendar, .local__texto .botao')];
   if (!botaoHero || !('IntersectionObserver' in window)) {
     raiz.classList.remove('barra-oculta');
     return;
@@ -15,17 +16,16 @@
   window.__barraControlada = true;
 
   let passouDoHero = false;
-  let horarioNaTela = false;
-  const atualizar = () => raiz.classList.toggle('barra-oculta', !passouDoHero || horarioNaTela);
+  const naTela = new Set();
+  const atualizar = () => raiz.classList.toggle('barra-oculta', !passouDoHero || naTela.size > 0);
 
-  new IntersectionObserver((entradas) => {
-    entradas.forEach((e) => {
-      if (e.target === botaoHero) passouDoHero = !e.isIntersecting && e.boundingClientRect.top < 0;
-      else horarioNaTela = e.isIntersecting;
-    });
+  new IntersectionObserver(([e]) => {
+    passouDoHero = !e.isIntersecting && e.boundingClientRect.top < 0;
     atualizar();
   }).observe(botaoHero);
-  if (botaoHorario) {
-    new IntersectionObserver(([e]) => { horarioNaTela = e.isIntersecting; atualizar(); }).observe(botaoHorario);
-  }
+  const observador = new IntersectionObserver((entradas) => {
+    entradas.forEach((e) => (e.isIntersecting ? naTela.add(e.target) : naTela.delete(e.target)));
+    atualizar();
+  });
+  escondem.forEach((alvo) => observador.observe(alvo));
 })();

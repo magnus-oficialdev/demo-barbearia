@@ -34,6 +34,13 @@
 - História, nomes (Seu Raimundo, Davi, Tiago) e a regra da casa: inventados, a pedido.
 - Fotos dos barbeiros, da galeria, do ritual e do interior: pessoas e lugar **fictícios**, geradas por IA no Figma (mesmo arquivo do hero, `gpt-image-2.5-sunburst`), recortadas aqui. A página avisa que são ilustrativas. O poste vermelho e azul que veio na foto do interior foi cortado (fora da paleta).
 
+## Agendamento (comanda)
+
+- Seção `#agendar`: serviço, barbeiro, dia e horário → mensagem pronta no WhatsApp (`js/agendar.js`). Não há sistema de reservas: a disponibilidade real é confirmada pela barbearia.
+- Serviços lidos do cardápio (`data-servico/minutos/preco`) e horários da tabela (`data-dias/abre/fecha`): mudou lá, muda no formulário.
+- Horários de hora em hora, com pelo menos 1 h de antecedência, e só os que cabem antes de fechar.
+- Os demais botões "Agendar" da página levam à comanda; o rodapé e "Prefere conversar?" mantêm o WhatsApp direto.
+
 ## Pendências
 
 - **Conflito de fontes:** este briefing pede Bebas Neue/Oswald + Inter/Manrope; a Direção A escolhida (e o `.ux-profile.md` atual) usa Big Shoulders Display + Barlow.
