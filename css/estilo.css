@@ -204,6 +204,9 @@ a { color: inherit; }
 
 /* ============ COMPONENTES ============ */
 .botao {
+  font: inherit; /* <button> não herda a fonte do navegador por padrão */
+  border: 0;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -799,6 +802,12 @@ html:not(.js) .comanda { display: none; } /* sem JS: só o link direto do <noscr
 }
 .aviso-erro .icone { color: var(--cor-acento); }
 .grupo--erro .opcoes--hora .opcao__corpo { border-color: var(--cor-acento); }
+
+/* Alto contraste do sistema: o escolhido continua diferente dos outros */
+@media (forced-colors: active) {
+  .opcao input:checked + .opcao__corpo { border: var(--borda-foco) solid Highlight; }
+  .opcao__marca { forced-color-adjust: auto; }
+}
 
 /* A comanda: um "ticket" com faixa de poste no topo e linha de corte com a tesoura */
 .comanda__resumo {

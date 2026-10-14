@@ -13,6 +13,7 @@
   const WHATSAPP = '558699436939';
   const CHAVE_RASCUNHO = 'oficio22:comanda';
   const DIAS_LISTADOS = 6;
+  const FUSO_DA_LOJA = 'America/Fortaleza'; // Teresina (PI)
   const ANTECEDENCIA_MIN = 60; // não oferece horário que começa em menos de 1 h
 
   const servicos = [...document.querySelectorAll('.cardapio__item[data-servico]')].map((li) => ({
@@ -39,6 +40,16 @@
   const semanaLonga = new Intl.DateTimeFormat('pt-BR', { weekday: 'long' });
   const diaMes = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' });
   const real = (v) => 'R$ ' + v.toLocaleString('pt-BR');
+
+  // "Agora" no relógio de parede da barbearia, qualquer que seja o fuso do aparelho
+  const relogioLoja = new Intl.DateTimeFormat('en-US', {
+    timeZone: FUSO_DA_LOJA, hourCycle: 'h23',
+    year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+  });
+  function agoraNaLoja() {
+    const p = Object.fromEntries(relogioLoja.formatToParts(new Date()).map((x) => [x.type, Number(x.value)]));
+    return new Date(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+  }
   const capitalizar = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 
   /* ---------- rascunho (só preferências, nada sensível) ---------- */
@@ -50,7 +61,11 @@
       }));
     } catch { /* navegação privada: segue sem rascunho */ }
   };
-  const apagarRascunho = () => { try { localStorage.removeItem(CHAVE_RASCUNHO); } catch { /* idem */ } };
+  const apagarRascunho = () => {
+    clearTimeout(espera); // um salvamento agendado não pode ressuscitar o rascunho
+    try { localStorage.removeItem(CHAVE_RASCUNHO); } catch { /* idem */ }
+  };
+  let espera;
 
   /* ---------- opções ---------- */
   // Uma opção = rádio de verdade (teclado e leitor de tela) com o visual de cartão
@@ -89,7 +104,7 @@
 
   // Próximos dias abertos que ainda têm algum horário
   function proximosDias() {
-    const agora = new Date();
+    const agora = agoraNaLoja();
     const base = new Date(agora);
     base.setHours(0, 0, 0, 0);
     const dias = [];
@@ -155,19 +170,27 @@
 
   /* ---------- validação: só depois de sair do campo; limpa ao voltar a ele ---------- */
   const nomeValido = () => nome.value.trim().length >= 2;
+  // O leitor de tela só ouve o erro quando ele existe (aria-invalid="true" + descrição)
   function mostrarErroNome(mostrar) {
     erroNome.hidden = !mostrar;
-    nome.toggleAttribute('aria-invalid', mostrar);
+    if (mostrar) {
+      nome.setAttribute('aria-invalid', 'true');
+      nome.setAttribute('aria-describedby', 'nome-erro');
+    } else {
+      nome.removeAttribute('aria-invalid');
+      nome.removeAttribute('aria-describedby');
+    }
   }
   function mostrarErroHora(mostrar) {
     erroHora.hidden = !mostrar;
     grupoHora.classList.toggle('grupo--erro', mostrar);
+    if (mostrar) grupoHora.setAttribute('aria-describedby', 'hora-erro');
+    else grupoHora.removeAttribute('aria-describedby');
   }
   nome.addEventListener('blur', () => mostrarErroNome(!nomeValido()));
   nome.addEventListener('focus', () => mostrarErroNome(false));
   nome.addEventListener('input', () => { mostrarErroNome(false); agendarRascunho(); });
 
-  let espera;
   const agendarRascunho = () => { clearTimeout(espera); espera = setTimeout(salvarRascunho, 500); };
 
   form.addEventListener('change', (e) => {
@@ -199,6 +222,8 @@
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    // A hora escolhida pode ter passado (celular bloqueado, notebook dormindo): confere antes de enviar
+    atualizarListas();
     const faltaHora = !valor('hora');
     const faltaNome = !nomeValido();
     mostrarErroHora(faltaHora);
@@ -208,11 +233,13 @@
       if (primeiro) focarPrimeiroErro(primeiro);
       return;
     }
-    if (faltaNome) { focarPrimeiroErro(nome); return; }
+    // O foco no campo limpa o erro (regra do formulário): por isso o erro é mostrado depois do foco
+    if (faltaNome) { focarPrimeiroErro(nome); mostrarErroNome(true); return; }
 
     const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`;
     window.open(url, '_blank', 'noopener');
     apagarRascunho();
+    avisoRascunho.hidden = true;
     form.querySelector('[data-link-whatsapp]').href = url;
     form.querySelector('[data-etapa="formulario"]').hidden = true;
     const enviado = form.querySelector('[data-etapa="enviado"]');
@@ -238,6 +265,7 @@
     montarHoras();
     atualizarResumo();
     avisoRascunho.hidden = true;
+    nome.focus(); // o botão "Limpar" some junto com o aviso: o foco vai para o vizinho lógico
   });
 
   /* ---------- início ---------- */
@@ -253,11 +281,23 @@
   montarHoras();
   atualizarResumo();
 
-  // Com a página aberta, horários vão passando: refaz as listas só quando mudarem de fato
-  // (sem tirar o foco de quem está escolhendo à toa)
-  const assinatura = (lista) => lista.map((d) => d.chave + ':' + d.horas.join(',')).join('|');
-  setInterval(() => {
+  // Com a página aberta, horários vão passando: refaz as listas só quando mudarem de fato.
+  // A distância entra na assinatura para "Hoje"/"Amanhã" virarem à meia-noite.
+  // Quem está no teclado continua no mesmo lugar depois de refazer.
+  function atualizarListas() {
+    const assinatura = (lista) => lista.map((d) => `${d.chave}@${d.distancia}:${d.horas.join(',')}`).join('|');
     if (assinatura(proximosDias()) === assinatura(dias)) return;
+    const ativo = document.activeElement;
+    const grupo = ativo && (ativo.name === 'dia' || ativo.name === 'hora') ? ativo.name : '';
+    const valorAtivo = grupo ? ativo.value : '';
     montarDias(); montarHoras(); atualizarResumo();
-  }, 5 * 60 * 1000);
+    if (grupo) {
+      (form.querySelector(`input[name="${grupo}"][value="${CSS.escape(valorAtivo)}"]`)
+        || form.querySelector(`input[name="${grupo}"]:checked`)
+        || caixa(grupo).querySelector('input')
+        || caixa('dia').querySelector('input'))?.focus({ preventScroll: true });
+    }
+  }
+  setInterval(atualizarListas, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizarListas(); });
 })();
