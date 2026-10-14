@@ -45,6 +45,7 @@
   --texto-6: 2.986rem;           /* 47.8px */
   --texto-marca-min: 2.986rem;   /* passo 6 — só em telas muito estreitas */
   --texto-marca-max: 12.84rem;   /* passo 14 */
+  --texto-faixa: clamp(var(--texto-6), 1rem + 7vw, 8.92rem); /* frase da faixa âmbar, até o passo 12 */
   --marca-razao: 4.2;            /* largura de 2× "OFÍCIO" em em, com folga */
 
   --entrelinha-display: 1.1;
@@ -67,6 +68,11 @@
   /* Medidas */
   --largura-max: 1200px;
   --largura-texto: 65ch;
+  --largura-estreita: 44rem;      /* seções de uma coluna só */
+  --largura-ampla: 1440px;        /* galeria de ponta a ponta */
+  --largura-traco: 320px;         /* assinatura: traço da navalha */
+  --traco-navalha: 3;
+  --altura-barra: calc(var(--alvo-toque) + 2 * var(--esp-2) + var(--borda-fina));
   --alvo-toque: 48px;
   --borda-fina: 1px;
   --borda-foco: 2px;
@@ -84,10 +90,16 @@
   /* Raios */
   --raio-1: 4px;
   --raio-2: 8px;
+  --raio-redondo: 50%;
 
   /* Sombras (tema escuro: luz de borda, sem brilho) */
   --sombra-borda: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --sombra-flutuante: 0 -8px 24px rgba(0, 0, 0, 0.4);
+
+  /* Movimento (Padrão Magnus: 0,4–0,9 s, só transform e opacity — ver docs/briefing.md) */
+  --mov-curto: 0.4s;
+  --curva-saida: cubic-bezier(0.16, 1, 0.3, 1);   /* entrar: desacelera */
+  --curva-entrada: cubic-bezier(0.7, 0, 0.84, 0); /* sair: acelera */
 
   /* Camadas */
   --z-topo: 10;
@@ -327,6 +339,8 @@ a { color: inherit; }
 }
 
 /* ============ SEÇÕES ============ */
+/* Ritmo: largo (serviços) → estreito (ritual) → texto longo + imagem grande (equipe)
+   → faixa âmbar (regra) → de ponta a ponta (galeria) → dividido (horário). */
 .secao { padding-block: var(--esp-7); }
 .secao--faixa {
   background: var(--cor-superficie);
@@ -337,6 +351,7 @@ a { color: inherit; }
   margin-inline: auto;
   padding-inline: var(--esp-3);
 }
+.secao__interno--estreito { max-width: var(--largura-estreita); }
 .secao__titulo {
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-titulo);
@@ -351,23 +366,32 @@ a { color: inherit; }
   color: var(--cor-texto-suave);
 }
 
+/* --- Serviços: título à esquerda, cardápio à direita --- */
+.servicos__grade { display: grid; gap: var(--esp-5); }
+.servicos__cabeca .nota-demo { margin-top: var(--esp-2); }
+
+/* Assinatura da marca: o traço da navalha */
 .traco-navalha {
-  width: min(100%, calc(var(--esp-9) * 2));
-  height: var(--esp-3);
-  margin-top: var(--esp-2);
+  display: block;
+  width: min(100%, var(--largura-traco));
+  height: auto;
+  margin-top: var(--esp-3);
+  overflow: visible;
+}
+.traco-navalha__linha {
   fill: none;
   stroke: var(--cor-acento);
-  stroke-width: var(--borda-foco);
+  stroke-width: var(--traco-navalha);
   stroke-linecap: round;
 }
 
-/* Cardápio de serviços: painel L1 com divisórias finas */
+/* Cardápio: painel L1 com divisórias finas; um único item em destaque */
 .cardapio {
-  margin-top: var(--esp-5);
   background: var(--cor-superficie);
   border: var(--borda-fina) solid var(--cor-borda);
   border-radius: var(--raio-2);
   box-shadow: var(--sombra-borda);
+  overflow: hidden;
 }
 .cardapio__item {
   display: grid;
@@ -402,45 +426,100 @@ a { color: inherit; }
   color: var(--cor-acento);
   white-space: nowrap;
 }
+.cardapio__item--destaque {
+  background: var(--cor-acento);
+  color: var(--cor-sobre-acento);
+}
+.cardapio__item--destaque .cardapio__desc,
+.cardapio__item--destaque .cardapio__tempo,
+.cardapio__item--destaque .cardapio__preco { color: var(--cor-sobre-acento); }
+.cardapio__selo {
+  margin-bottom: var(--esp-1);
+  font-size: var(--texto-secundario);
+  font-weight: var(--peso-semi);
+}
 
-/* Ritual: sequência real, então numerada */
+/* --- Ritual: coluna estreita, passos ligados por uma linha (sequência real) --- */
 .ritual {
   counter-reset: passo;
   display: grid;
-  gap: var(--esp-5);
-  margin-top: var(--esp-5);
+  gap: var(--esp-6);
+  margin-top: var(--esp-6);
 }
 .ritual__passo {
   counter-increment: passo;
+  position: relative;
   display: grid;
   grid-template-columns: var(--esp-6) 1fr;
-  column-gap: var(--esp-3);
-  row-gap: var(--esp-1);
+  column-gap: var(--esp-4);
+  row-gap: var(--esp-2);
   color: var(--cor-texto-suave);
 }
 .ritual__passo::before {
   content: counter(passo);
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: var(--esp-6);
+  height: var(--esp-6);
+  border: var(--borda-foco) solid var(--cor-acento);
+  border-radius: var(--raio-redondo);
+  background: var(--cor-superficie);
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-titulo);
-  font-size: var(--texto-6);
+  font-size: var(--texto-3);
   line-height: var(--entrelinha-display);
   color: var(--cor-acento);
 }
-.ritual__passo .icone { color: var(--cor-texto); }
+/* Linha que liga um passo ao próximo */
+.ritual__passo:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--esp-6) / 2 - var(--borda-fina));
+  top: var(--esp-6);
+  bottom: calc(-1 * var(--esp-6));
+  width: var(--borda-foco);
+  background: var(--cor-acento);
+}
 .ritual__nome {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: var(--esp-6);
   font-size: var(--texto-2);
   font-weight: var(--peso-semi);
   line-height: var(--entrelinha-titulo);
   color: var(--cor-texto);
 }
 
-/* Barbeiros */
-.barbeiros {
+/* --- Quem corta: texto longo + retratos de tamanhos diferentes --- */
+.equipe { display: grid; gap: var(--esp-6); }
+.equipe__historia {
   display: grid;
-  gap: var(--esp-6);
-  margin-top: var(--esp-5);
+  gap: var(--esp-3);
+  max-width: var(--largura-texto);
+  margin-top: var(--esp-4);
+  font-size: var(--texto-1);
 }
+.bairro {
+  max-width: var(--largura-texto);
+  margin-top: var(--esp-5);
+  padding: var(--esp-4) var(--esp-3);
+  background: var(--cor-superficie);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+  box-shadow: var(--sombra-borda);
+  color: var(--cor-texto-suave);
+}
+.bairro__titulo {
+  margin-bottom: var(--esp-1);
+  font-size: var(--texto-1);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+  color: var(--cor-texto);
+}
+.equipe__fotos { display: grid; gap: var(--esp-5); }
+.barbeiro--segundo { width: 72%; justify-self: end; }
 .barbeiro { color: var(--cor-texto-suave); }
 .barbeiro__nome {
   margin-top: var(--esp-3);
@@ -449,42 +528,50 @@ a { color: inherit; }
   line-height: var(--entrelinha-titulo);
   color: var(--cor-texto);
 }
-.barbeiro__papel {
-  margin-bottom: var(--esp-2);
-  color: var(--cor-acento);
-  font-weight: var(--peso-semi);
-}
+.barbeiro__papel { margin-top: var(--esp-1); }
 
-.casa {
-  display: grid;
-  margin-top: var(--esp-6);
-  background: var(--cor-superficie);
-  border: var(--borda-fina) solid var(--cor-borda);
-  border-radius: var(--raio-2);
-  box-shadow: var(--sombra-borda);
+/* --- A regra da casa: faixa âmbar de ponta a ponta --- */
+.regra {
+  padding-block: var(--esp-7);
+  background: var(--cor-acento);
+  color: var(--cor-sobre-acento);
 }
-.casa__bloco { padding: var(--esp-4) var(--esp-3); color: var(--cor-texto-suave); }
-.casa__bloco + .casa__bloco { border-top: var(--borda-fina) solid var(--cor-borda); }
-.casa__titulo {
-  margin-bottom: var(--esp-2);
+.regra__titulo {
   font-size: var(--texto-1);
   font-weight: var(--peso-semi);
   line-height: var(--entrelinha-titulo);
-  color: var(--cor-texto);
 }
+.regra__frase {
+  margin-top: var(--esp-2);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-faixa);
+  line-height: var(--entrelinha-display);
+  text-transform: uppercase;
+}
+.regra__apoio {
+  max-width: var(--largura-texto);
+  margin-top: var(--esp-4);
+  font-size: var(--texto-1);
+}
+.regra .nota-demo { color: var(--cor-sobre-acento); }
 
-/* Galeria */
+/* --- Galeria: de ponta a ponta, uma foto grande --- */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--esp-3);
-  margin-top: var(--esp-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-2);
+  max-width: var(--largura-ampla);
+  margin: var(--esp-5) auto 0;
+  padding-inline: var(--esp-2);
 }
 .galeria__item--destaque { grid-column: 1 / -1; }
 .galeria figure { display: grid; gap: var(--esp-2); }
+.galeria .foto-exemplo { aspect-ratio: 4 / 5; }
+.galeria__item--destaque .foto-exemplo { aspect-ratio: 4 / 3; }
 .galeria figcaption { font-size: var(--texto-secundario); color: var(--cor-texto-suave); }
 
-/* Horário e mapa */
+/* --- Horário e mapa --- */
 .local { display: grid; gap: var(--esp-5); }
 .horario {
   width: 100%;
@@ -509,6 +596,7 @@ a { color: inherit; }
   margin-block: var(--esp-4);
   font-style: normal;
 }
+.local__chamada { margin-bottom: var(--esp-3); }
 .local__mapa { aspect-ratio: 4 / 3; }
 
 /* ============ RODAPÉ ============ */
@@ -538,6 +626,7 @@ a { color: inherit; }
 }
 
 /* ============ FIXOS ============ */
+/* Barra de agendar (celular): só aparece depois que o botão do hero sai da tela */
 .barra-agendar {
   position: fixed;
   inset-inline: 0;
@@ -547,14 +636,22 @@ a { color: inherit; }
   background: var(--cor-fundo);
   border-top: var(--borda-fina) solid var(--cor-borda);
   box-shadow: var(--sombra-flutuante);
+  transition: transform var(--mov-curto) var(--curva-saida), opacity var(--mov-curto) var(--curva-saida);
+}
+.barra-oculta .barra-agendar {
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform var(--mov-curto) var(--curva-entrada), opacity var(--mov-curto) var(--curva-entrada), visibility 0s linear var(--mov-curto);
 }
 
-/* Selo: faixa fina e fixa. No celular fica colada em cima da barra de agendamento;
-   no desktop, no pé da janela. O body reserva esse espaço para nada ficar escondido. */
+/* Selo: faixa fina e fixa. No celular fica colada em cima da barra de agendamento
+   (e desce junto quando ela some); no desktop, no pé da janela.
+   O body reserva esse espaço para nada ficar escondido. */
 .selo-demo {
   position: fixed;
   inset-inline: 0;
-  bottom: calc(var(--alvo-toque) + var(--esp-3) + var(--borda-fina));
+  bottom: var(--altura-barra);
   z-index: var(--z-selo);
   padding: var(--esp-1) var(--esp-2);
   background: var(--cor-fundo);
@@ -564,18 +661,29 @@ a { color: inherit; }
   font-size: var(--texto-meta);
   line-height: var(--entrelinha-meta);
   pointer-events: none;
+  transition: transform var(--mov-curto) var(--curva-saida);
+}
+.barra-oculta .selo-demo { transform: translateY(var(--altura-barra)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .barra-agendar,
+  .barra-oculta .barra-agendar,
+  .selo-demo { transition: none; }
 }
 
 /* ============ TABLET (≥ 720px) ============ */
 @media (min-width: 720px) {
-  .barbeiros { grid-template-columns: repeat(2, 1fr); gap: var(--esp-5); }
-  .casa { grid-template-columns: repeat(2, 1fr); }
-  .casa__bloco + .casa__bloco { border-top: 0; border-left: var(--borda-fina) solid var(--cor-borda); }
-  .ritual { grid-template-columns: repeat(3, 1fr); }
-  .galeria { grid-template-columns: repeat(4, 1fr); }
+  .galeria {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--esp-3);
+    padding-inline: var(--esp-3);
+  }
   .galeria__item--destaque { grid-column: span 2; grid-row: span 2; }
-  .galeria__item--destaque .foto-exemplo { aspect-ratio: auto; height: 100%; }
   .galeria__item--destaque figure { height: 100%; grid-template-rows: 1fr auto; }
+  .galeria__item--destaque .foto-exemplo { aspect-ratio: auto; height: 100%; }
+
+  .equipe__fotos { grid-template-columns: 7fr 5fr; align-items: start; }
+  .barbeiro--segundo { width: auto; margin-top: var(--esp-8); }
 }
 
 /* ============ DESKTOP (≥ 1024px) ============ */
@@ -602,10 +710,28 @@ a { color: inherit; }
   .secao__interno { padding-inline: var(--esp-5); }
   .secao__titulo { font-size: var(--texto-6); }
 
+  .servicos__grade {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--esp-7);
+    align-items: start;
+  }
   .cardapio__item { padding: var(--esp-4); }
 
-  .local { grid-template-columns: 1fr 1fr; gap: var(--esp-6); align-items: start; }
+  .equipe {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--esp-7);
+    align-items: start;
+  }
+
+  .regra { padding-block: var(--esp-8); }
+
+  .local {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--esp-6);
+    align-items: start;
+  }
 
   /* No desktop o selo vira faixa no rodapé da janela (sem cobrir conteúdo de forma permanente) */
-  .selo-demo { bottom: 0; }
+  .selo-demo,
+  .barra-oculta .selo-demo { bottom: 0; transform: none; }
 }

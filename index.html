@@ -20,11 +20,18 @@
         document.documentElement.classList.remove('entrada');
       }, 1500);
     }
+    // Barra fixa de agendar (celular) começa escondida: o botão do hero já está na tela.
+    // Se o principal.js não assumir em 1,5 s, a barra volta a aparecer.
+    document.documentElement.classList.add('barra-oculta');
+    setTimeout(function () {
+      if (!window.__barraControlada) document.documentElement.classList.remove('barra-oculta');
+    }, 1500);
   </script>
   <script type="importmap">
     { "imports": { "three": "./vendor/three@0.186.1/three.module.min.js" } }
   </script>
   <script src="vendor/gsap@3.15.0/gsap.min.js" defer></script>
+  <script src="vendor/gsap@3.15.0/DrawSVGPlugin.min.js" defer></script>
   <script src="js/principal.js" defer></script>
 </head>
 <body>
@@ -99,17 +106,20 @@
       </div>
     </section>
 
-    <!-- SERVIÇOS -->
-    <section class="secao" id="servicos" aria-labelledby="servicos-titulo">
-      <div class="secao__interno">
-        <h2 class="secao__titulo" id="servicos-titulo">Serviços e preços</h2>
-        <!-- Traço da navalha: será desenhado com GSAP DrawSVG na etapa de movimento. -->
-        <svg class="traco-navalha" viewBox="0 0 400 16" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M2 12 C 120 2, 260 2, 398 8"/>
-        </svg>
-        <p class="secao__intro">Preço fechado, sem surpresa no fim. Valores de exemplo. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+    <!-- SERVIÇOS — largo, duas colunas. Destaque: o combo em faixa âmbar. Assinatura: traço da navalha. -->
+    <section class="secao servicos" id="servicos" aria-labelledby="servicos-titulo">
+      <div class="secao__interno servicos__grade">
+        <div class="servicos__cabeca" data-revelar>
+          <h2 class="secao__titulo" id="servicos-titulo">Serviços e preços</h2>
+          <!-- Assinatura da marca: o traço da navalha se desenha ao entrar na seção (GSAP DrawSVG). -->
+          <svg class="traco-navalha" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path class="traco-navalha__linha" d="M4 19 C 96 7, 236 3, 396 9"/>
+          </svg>
+          <p class="secao__intro">Preço fechado, sem surpresa no fim. O tempo de cada serviço já entra na sua reserva.</p>
+          <p class="nota-demo">Valores de exemplo. [TEXTO DE EXEMPLO]</p>
+        </div>
 
-        <ul class="cardapio">
+        <ul class="cardapio" data-revelar>
           <li class="cardapio__item">
             <div>
               <h3 class="cardapio__nome">Corte</h3>
@@ -124,10 +134,11 @@
             </div>
             <p class="cardapio__info"><span class="cardapio__tempo">30 min</span> <span class="cardapio__preco">R$ 35</span></p>
           </li>
-          <li class="cardapio__item">
+          <li class="cardapio__item cardapio__item--destaque">
             <div>
+              <p class="cardapio__selo">Combo da casa</p>
               <h3 class="cardapio__nome">Corte e barba</h3>
-              <p class="cardapio__desc">Os dois serviços numa cadeira só.</p>
+              <p class="cardapio__desc">Os dois serviços numa cadeira só, com o ritual completo.</p>
             </div>
             <p class="cardapio__info"><span class="cardapio__tempo">70 min</span> <span class="cardapio__preco">R$ 70</span></p>
           </li>
@@ -149,115 +160,120 @@
       </div>
     </section>
 
-    <!-- RITUAL -->
+    <!-- RITUAL — estreito, uma coluna. Destaque: a linha que liga os três passos (é uma sequência real). -->
     <section class="secao secao--faixa" id="ritual" aria-labelledby="ritual-titulo">
-      <div class="secao__interno">
-        <h2 class="secao__titulo" id="ritual-titulo">O ritual</h2>
-        <p class="secao__intro">Todo atendimento segue os mesmos três passos. Sem pressa, sem pular nenhum.</p>
-        <ol class="ritual">
+      <div class="secao__interno secao__interno--estreito">
+        <div data-revelar>
+          <h2 class="secao__titulo" id="ritual-titulo">O ritual</h2>
+          <p class="secao__intro">Todo atendimento segue os mesmos três passos. Sem pressa, sem pular nenhum.</p>
+        </div>
+        <ol class="ritual" data-revelar>
           <li class="ritual__passo">
-            <svg class="icone icone--grande" aria-hidden="true"><use href="#i-cafe"/></svg>
-            <h3 class="ritual__nome">Recepção</h3>
+            <h3 class="ritual__nome"><svg class="icone" aria-hidden="true"><use href="#i-cafe"/></svg> Recepção</h3>
             <p>Café ou água enquanto você conta como quer o corte. A gente escuta antes de pegar a tesoura.</p>
           </li>
           <li class="ritual__passo">
-            <svg class="icone icone--grande" aria-hidden="true"><use href="#i-chama"/></svg>
-            <h3 class="ritual__nome">Toalha quente</h3>
+            <h3 class="ritual__nome"><svg class="icone" aria-hidden="true"><use href="#i-chama"/></svg> Toalha quente</h3>
             <p>Amacia a barba e abre os poros. É o que faz a navalha passar sem irritar.</p>
           </li>
           <li class="ritual__passo">
-            <svg class="icone icone--grande" aria-hidden="true"><use href="#i-tesoura"/></svg>
-            <h3 class="ritual__nome">Acabamento</h3>
+            <h3 class="ritual__nome"><svg class="icone" aria-hidden="true"><use href="#i-tesoura"/></svg> Acabamento</h3>
             <p>Contorno na navalha, pós-barba e o espelho na sua mão. Só termina quando você aprova.</p>
           </li>
         </ol>
       </div>
     </section>
 
-    <!-- BARBEIROS -->
+    <!-- QUEM CORTA — texto longo + imagem grande. Destaque: o retrato de quem toca a casa. -->
     <section class="secao" id="barbeiros" aria-labelledby="barbeiros-titulo">
-      <div class="secao__interno">
-        <h2 class="secao__titulo" id="barbeiros-titulo">Quem corta</h2>
-        <p class="secao__intro">Seu Raimundo abriu a porta e ensinou o ofício ao filho. Hoje é o filho quem toca a casa, com mais um barbeiro do lado. <span class="nota-demo">[CONFIRMAR: nomes e história — personagens fictícios]</span></p>
+      <div class="secao__interno equipe">
+        <div class="equipe__texto" data-revelar>
+          <h2 class="secao__titulo" id="barbeiros-titulo">Quem corta</h2>
+          <div class="equipe__historia">
+            <p>Seu Raimundo cortou cabelo a vida inteira. Quando abriu a Ofício 22, trouxe o filho para a cadeira do lado e passou o ofício do jeito que aprendeu: olhando a mão de quem sabe.</p>
+            <p>Hoje é o filho quem toca a casa, com mais um barbeiro. O jeito de trabalhar não mudou: uma cadeira de cada vez, hora marcada e acabamento na navalha.</p>
+            <p class="nota-demo">[CONFIRMAR: nomes e história — personagens fictícios]</p>
+          </div>
+          <aside class="bairro" aria-labelledby="bairro-titulo">
+            <h3 class="bairro__titulo" id="bairro-titulo">Coisa do bairro</h3>
+            <p>O café vem da padaria da esquina, passado na hora. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+          </aside>
+        </div>
 
-        <div class="barbeiros">
-          <article class="barbeiro">
-            <div class="foto-exemplo foto-exemplo--retrato" role="img" aria-label="Foto de exemplo do barbeiro">
+        <div class="equipe__fotos" data-revelar>
+          <article class="barbeiro barbeiro--principal">
+            <div class="foto-exemplo foto-exemplo--retrato" role="img" aria-label="Foto de exemplo do barbeiro que toca a casa">
               <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pessoa"/></svg>
               <span>[FOTO DE EXEMPLO]</span>
             </div>
             <h3 class="barbeiro__nome">[NOME DO FILHO]</h3>
-            <p class="barbeiro__papel">Toca a casa</p>
-            <p>Aprendeu na cadeira do pai. Gosta de corte clássico com acabamento na tesoura. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+            <p class="barbeiro__papel">Toca a casa. Corte clássico, acabamento na tesoura. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
           </article>
-          <article class="barbeiro">
-            <div class="foto-exemplo foto-exemplo--retrato" role="img" aria-label="Foto de exemplo do barbeiro">
+          <article class="barbeiro barbeiro--segundo">
+            <div class="foto-exemplo foto-exemplo--retrato" role="img" aria-label="Foto de exemplo do segundo barbeiro">
               <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pessoa"/></svg>
               <span>[FOTO DE EXEMPLO]</span>
             </div>
             <h3 class="barbeiro__nome">[NOME DO SEGUNDO BARBEIRO]</h3>
-            <p class="barbeiro__papel">Barbeiro</p>
-            <p>Mão firme na navalha. É quem você procura para barba. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+            <p class="barbeiro__papel">Mão firme na navalha. É quem você procura para barba. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
           </article>
         </div>
-
-        <div class="casa">
-          <div class="casa__bloco">
-            <h3 class="casa__titulo">A regra da casa</h3>
-            <p>Hora marcada é hora marcada. Chegou, sentou. Se atrasar mais de 15 minutos, a gente remarca para não atrasar o próximo. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
-          </div>
-          <div class="casa__bloco">
-            <h3 class="casa__titulo">Coisa do bairro</h3>
-            <p>O café vem da padaria da esquina, passado na hora. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
-          </div>
-        </div>
       </div>
     </section>
 
-    <!-- GALERIA -->
+    <!-- A REGRA DA CASA — faixa âmbar de ponta a ponta, só tipografia. -->
+    <section class="regra" aria-labelledby="regra-titulo">
+      <div class="secao__interno" data-revelar>
+        <h2 class="regra__titulo" id="regra-titulo">A regra da casa</h2>
+        <p class="regra__frase">Hora marcada é hora marcada.</p>
+        <p class="regra__apoio">Chegou, sentou. Se atrasar mais de 15 minutos, a gente remarca para não atrasar o próximo. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+      </div>
+    </section>
+
+    <!-- GALERIA — largo, de ponta a ponta. Destaque: uma foto grande. -->
     <section class="secao secao--faixa" id="galeria" aria-labelledby="galeria-titulo">
-      <div class="secao__interno">
+      <div class="secao__interno" data-revelar>
         <h2 class="secao__titulo" id="galeria-titulo">Galeria</h2>
         <p class="secao__intro">Cortes feitos aqui. <span class="nota-demo">[FOTOS DE EXEMPLO]</span></p>
-        <ul class="galeria">
-          <li class="galeria__item galeria__item--destaque">
-            <figure>
-              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: degradê baixo"><span>[FOTO DE EXEMPLO]</span></div>
-              <figcaption>Degradê baixo</figcaption>
-            </figure>
-          </li>
-          <li class="galeria__item">
-            <figure>
-              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: barba desenhada"><span>[FOTO DE EXEMPLO]</span></div>
-              <figcaption>Barba desenhada</figcaption>
-            </figure>
-          </li>
-          <li class="galeria__item">
-            <figure>
-              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: corte social na tesoura"><span>[FOTO DE EXEMPLO]</span></div>
-              <figcaption>Social na tesoura</figcaption>
-            </figure>
-          </li>
-          <li class="galeria__item">
-            <figure>
-              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: navalha no contorno"><span>[FOTO DE EXEMPLO]</span></div>
-              <figcaption>Contorno na navalha</figcaption>
-            </figure>
-          </li>
-          <li class="galeria__item">
-            <figure>
-              <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: a cadeira da casa"><span>[FOTO DE EXEMPLO]</span></div>
-              <figcaption>A cadeira</figcaption>
-            </figure>
-          </li>
-        </ul>
       </div>
+      <ul class="galeria" data-revelar>
+        <li class="galeria__item galeria__item--destaque">
+          <figure>
+            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: degradê baixo"><span>[FOTO DE EXEMPLO]</span></div>
+            <figcaption>Degradê baixo</figcaption>
+          </figure>
+        </li>
+        <li class="galeria__item">
+          <figure>
+            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: barba desenhada"><span>[FOTO DE EXEMPLO]</span></div>
+            <figcaption>Barba desenhada</figcaption>
+          </figure>
+        </li>
+        <li class="galeria__item">
+          <figure>
+            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: corte social na tesoura"><span>[FOTO DE EXEMPLO]</span></div>
+            <figcaption>Social na tesoura</figcaption>
+          </figure>
+        </li>
+        <li class="galeria__item">
+          <figure>
+            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: navalha no contorno"><span>[FOTO DE EXEMPLO]</span></div>
+            <figcaption>Contorno na navalha</figcaption>
+          </figure>
+        </li>
+        <li class="galeria__item">
+          <figure>
+            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: a cadeira da casa"><span>[FOTO DE EXEMPLO]</span></div>
+            <figcaption>A cadeira</figcaption>
+          </figure>
+        </li>
+      </ul>
     </section>
 
-    <!-- HORÁRIO E MAPA -->
+    <!-- HORÁRIO E MAPA — dividido. Destaque: horário + botão de agendar. -->
     <section class="secao" id="horario" aria-labelledby="horario-titulo">
       <div class="secao__interno local">
-        <div class="local__texto">
+        <div class="local__texto" data-revelar>
           <h2 class="secao__titulo" id="horario-titulo">Horário e endereço</h2>
           <table class="horario">
             <caption class="visualmente-oculto">Horário de funcionamento (exemplo)</caption>
@@ -272,13 +288,14 @@
             <svg class="icone" aria-hidden="true"><use href="#i-pino"/></svg>
             <span>[ENDEREÇO DE EXEMPLO], [BAIRRO], [CIDADE]</span>
           </address>
+          <p class="local__chamada">Escolha o horário pelo WhatsApp. A gente confirma na hora.</p>
           <!-- TROCAR: número de WhatsApp fictício -->
           <a class="botao" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
             <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
             Agendar pelo WhatsApp
           </a>
         </div>
-        <div class="foto-exemplo local__mapa" role="img" aria-label="Mapa de exemplo">
+        <div class="foto-exemplo local__mapa" role="img" aria-label="Mapa de exemplo" data-revelar>
           <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pino"/></svg>
           <span>[MAPA DE EXEMPLO]</span>
         </div>
@@ -296,7 +313,7 @@
     </div>
   </footer>
 
-  <!-- Barra fixa de agendamento (só no celular) -->
+  <!-- Barra fixa de agendamento (só no celular). Aparece depois que o botão do hero sai da tela. -->
   <div class="barra-agendar">
     <!-- TROCAR: número de WhatsApp fictício -->
     <a class="botao botao--largo" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">

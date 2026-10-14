@@ -123,4 +123,77 @@ function carregarPoste(depoisDaEntrada) {
   observador.observe(palco);
 }
 
+/* ---------- Seções: entradas curtas ao rolar ---------- */
+
+// Cada bloco marcado com data-revelar sobe 24 px e aparece uma vez, quando entra na tela.
+// Sem GSAP ou com movimento reduzido, nada é escondido.
+function revelarAoRolar() {
+  const { gsap } = window;
+  const alvos = [...document.querySelectorAll('[data-revelar]')];
+  if (!gsap || movimentoReduzido || !alvos.length || !('IntersectionObserver' in window)) return;
+
+  const pendentes = new Set(alvos);
+  const mostrar = (alvo, atraso = 0) => {
+    if (!pendentes.delete(alvo)) return;
+    observador.unobserve(alvo);
+    gsap.to(alvo, { opacity: 1, y: 0, duration: 0.6, delay: atraso, ease: 'power3.out', clearProps: 'transform' });
+  };
+
+  gsap.set(alvos, { opacity: 0, y: 24 });
+  const observador = new IntersectionObserver((entradas) => {
+    // Blocos que entram juntos aparecem em sequência curta (0,1 s), na ordem da página
+    entradas.filter((e) => e.isIntersecting).forEach((e, i) => mostrar(e.target, i * 0.1));
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+  alvos.forEach((alvo) => observador.observe(alvo));
+
+  // Teclado: se o foco cair num bloco ainda escondido, ele aparece na hora.
+  document.addEventListener('focusin', (e) => {
+    const alvo = e.target.closest && e.target.closest('[data-revelar]');
+    if (alvo && pendentes.has(alvo)) {
+      pendentes.delete(alvo);
+      observador.unobserve(alvo);
+      gsap.set(alvo, { opacity: 1, y: 0, clearProps: 'transform' });
+    }
+  });
+}
+
+/* ---------- Assinatura da marca: o traço da navalha ---------- */
+
+// Desenha o traço sob "Serviços e preços" uma única vez, quando ele entra na tela.
+// Única animação fora de transform/opacity (DrawSVG anima o traçado do SVG, só pintura).
+function assinaturaDaNavalha() {
+  const linha = document.querySelector('.traco-navalha__linha');
+  const { gsap, DrawSVGPlugin } = window;
+  if (!linha || !gsap || !DrawSVGPlugin || movimentoReduzido || !('IntersectionObserver' in window)) return;
+
+  gsap.registerPlugin(DrawSVGPlugin);
+  gsap.set(linha, { drawSVG: '0%' });
+  const observador = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting) return;
+    observador.disconnect();
+    gsap.to(linha, { drawSVG: '100%', duration: 0.9, delay: 0.3, ease: 'power2.inOut' });
+  }, { rootMargin: '0px 0px -15% 0px', threshold: 1 });
+  observador.observe(linha.ownerSVGElement);
+}
+
+/* ---------- Barra fixa de agendar (celular) ---------- */
+
+// Esconde a barra enquanto o botão do hero está na tela (evita dois botões iguais lado a lado).
+// O estado inicial (escondida) e a rede de segurança ficam no <head>.
+function barraDeAgendar() {
+  const botaoHero = document.querySelector('.hero__acoes .botao');
+  if (!botaoHero || !('IntersectionObserver' in window)) {
+    raiz.classList.remove('barra-oculta');
+    return;
+  }
+  window.__barraControlada = true;
+  new IntersectionObserver(([e]) => {
+    const passou = !e.isIntersecting && e.boundingClientRect.top < 0;
+    raiz.classList.toggle('barra-oculta', !passou);
+  }).observe(botaoHero);
+}
+
+barraDeAgendar();
 carregarPoste(entradaDoHero());
+revelarAoRolar();
+assinaturaDaNavalha();
