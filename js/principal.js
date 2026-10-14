@@ -6,6 +6,8 @@ const raiz = document.documentElement;
 raiz.classList.add('js');
 
 const parametros = new URLSearchParams(location.search);
+// Estado deixado pelo <head>: os blocos das seções ainda estão escondidos esperando o JS?
+const revelarAtivo = raiz.classList.contains('revelar');
 const movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- Entrada do hero ---------- */
@@ -132,7 +134,10 @@ function carregarPoste(depoisDaEntrada) {
 function revelarAoRolar() {
   const { gsap } = window;
   const alvos = [...document.querySelectorAll('[data-revelar]')];
-  if (!gsap || movimentoReduzido || !alvos.length || !('IntersectionObserver' in window)) return;
+  // Se a rede de segurança do <head> já mostrou tudo (rede lenta), não esconde de novo: nada pisca.
+  const aindaEscondidos = revelarAtivo;
+  clearTimeout(window.__segurancaRevelar);
+  if (!gsap || !aindaEscondidos || !alvos.length) { raiz.classList.remove('revelar'); return; }
 
   const pendentes = new Set(alvos);
   const mostrar = (alvo, atraso = 0) => {
@@ -141,7 +146,9 @@ function revelarAoRolar() {
     gsap.to(alvo, { opacity: 1, y: 0, duration: 0.6, delay: atraso, ease: 'power3.out', clearProps: 'transform' });
   };
 
+  // O GSAP assume o estado escondido no mesmo quadro em que a classe sai
   gsap.set(alvos, { opacity: 0, y: 24 });
+  raiz.classList.remove('revelar');
   const observador = new IntersectionObserver((entradas) => {
     // Blocos que entram juntos aparecem em sequência curta (0,1 s), na ordem da página
     entradas.filter((e) => e.isIntersecting).forEach((e, i) => mostrar(e.target, i * 0.1));
@@ -168,31 +175,22 @@ function assinaturaDaNavalha() {
   const { gsap, DrawSVGPlugin } = window;
   if (!linha || !gsap || !DrawSVGPlugin || movimentoReduzido || !('IntersectionObserver' in window)) return;
 
+  // Rede lenta: se a rede de segurança já mostrou as seções, não apaga um traço que já está à vista
+  if (!revelarAtivo) return;
+
   gsap.registerPlugin(DrawSVGPlugin);
   gsap.set(linha, { drawSVG: '0%' });
+  // Animação pausada e controlada pela visibilidade: só desenha com o traço na tela.
+  // Se ele sair antes de terminar (ex.: menu leva direto ao horário), volta a 0% e espera.
+  const traco = gsap.to(linha, {
+    drawSVG: '100%', duration: 0.9, delay: 0.3, ease: 'power2.inOut', paused: true,
+    onComplete: () => observador.disconnect(),
+  });
   const observador = new IntersectionObserver(([e]) => {
-    if (!e.isIntersecting) return;
-    observador.disconnect();
-    gsap.to(linha, { drawSVG: '100%', duration: 0.9, delay: 0.3, ease: 'power2.inOut' });
+    if (e.isIntersecting) traco.restart(true);
+    else traco.pause(0);
   }, { rootMargin: '0px 0px -15% 0px', threshold: 1 });
   observador.observe(linha.ownerSVGElement);
-}
-
-/* ---------- Barra fixa de agendar (celular) ---------- */
-
-// Esconde a barra enquanto o botão do hero está na tela (evita dois botões iguais lado a lado).
-// O estado inicial (escondida) e a rede de segurança ficam no <head>.
-function barraDeAgendar() {
-  const botaoHero = document.querySelector('.hero__acoes .botao');
-  if (!botaoHero || !('IntersectionObserver' in window)) {
-    raiz.classList.remove('barra-oculta');
-    return;
-  }
-  window.__barraControlada = true;
-  new IntersectionObserver(([e]) => {
-    const passou = !e.isIntersecting && e.boundingClientRect.top < 0;
-    raiz.classList.toggle('barra-oculta', !passou);
-  }).observe(botaoHero);
 }
 
 /* ---------- Hero: o cursor faz a barba ---------- */
@@ -210,7 +208,11 @@ function navalhaDoCursor(depoisDaEntrada) {
     .catch((erro) => console.warn('Efeito da barba indisponível.', erro));
 }
 
-barraDeAgendar();
+// Rolagem suave só depois que as fontes chegam: se a troca de fonte acontece no meio
+// de uma rolagem suave até uma âncora, ela termina no lugar errado (título sob o topo).
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => raiz.classList.add('rolagem-suave'));
+else raiz.classList.add('rolagem-suave');
+
 const fimDaEntrada = entradaDoHero();
 carregarPoste(fimDaEntrada);
 navalhaDoCursor(fimDaEntrada);

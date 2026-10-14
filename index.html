@@ -20,8 +20,16 @@
         document.documentElement.classList.remove('entrada');
       }, 1500);
     }
+    // Blocos das seções que entram ao rolar começam escondidos antes da 1ª pintura
+    // (evita aparecerem e sumirem). Mesma rede de segurança de 1,5 s.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      document.documentElement.classList.add('revelar');
+      window.__segurancaRevelar = setTimeout(function () {
+        document.documentElement.classList.remove('revelar');
+      }, 1500);
+    }
     // Barra fixa de agendar (celular) começa escondida: o botão do hero já está na tela.
-    // Se o principal.js não assumir em 1,5 s, a barra volta a aparecer.
+    // Se o js/barra.js não assumir em 1,5 s, a barra volta a aparecer.
     document.documentElement.classList.add('barra-oculta');
     setTimeout(function () {
       if (!window.__barraControlada) document.documentElement.classList.remove('barra-oculta');
@@ -30,6 +38,7 @@
   <script type="importmap">
     { "imports": { "three": "./vendor/three@0.186.1/three.module.min.js" } }
   </script>
+  <script src="js/barra.js" defer></script>
   <script src="vendor/gsap@3.15.0/gsap.min.js" defer></script>
   <script src="vendor/gsap@3.15.0/DrawSVGPlugin.min.js" defer></script>
   <script src="js/principal.js" defer></script>

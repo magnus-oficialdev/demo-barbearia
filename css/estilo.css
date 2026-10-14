@@ -127,7 +127,7 @@ html {
   scroll-padding-bottom: var(--reserva-base);
 }
 @media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
+  .rolagem-suave { scroll-behavior: smooth; } /* ligada pelo JS depois que as fontes chegam */
 }
 
 body {
@@ -347,6 +347,8 @@ a { color: inherit; }
 
 /* Enquanto a entrada em GSAP não começa (no máximo 1,5 s: rede de segurança no <head>) */
 .entrada .hero [data-entrada] { opacity: 0; }
+/* Blocos das seções esperando a entrada ao rolar (mesma rede de segurança) */
+.revelar [data-revelar] { opacity: 0; }
 
 .hero__texto { margin-top: var(--esp-4); }
 .hero__chamada {
@@ -583,6 +585,7 @@ a { color: inherit; }
   font-size: var(--texto-faixa);
   line-height: var(--entrelinha-display);
   text-transform: uppercase;
+  text-wrap: balance;
 }
 .regra__apoio {
   max-width: var(--largura-texto);
@@ -770,6 +773,8 @@ a { color: inherit; }
 
   .regra { padding-block: var(--esp-8); }
 
+  .rodape__interno { padding-inline: var(--esp-5); }
+
   .local {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: var(--esp-6);
@@ -779,4 +784,14 @@ a { color: inherit; }
   /* No desktop o selo vira faixa no rodapé da janela (sem cobrir conteúdo de forma permanente) */
   .selo-demo,
   .barra-oculta .selo-demo { bottom: 0; transform: none; }
+}
+
+/* ============ IMPRESSÃO ============ */
+/* Tudo visível e o traço da navalha inteiro, mesmo nas seções que não foram roladas */
+@media print {
+  [data-revelar],
+  [data-entrada] { opacity: 1 !important; transform: none !important; }
+  .traco-navalha__linha { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+  .barra-agendar,
+  .hero__foto-pincel { display: none !important; }
 }
