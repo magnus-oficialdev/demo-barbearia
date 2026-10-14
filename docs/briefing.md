@@ -21,6 +21,12 @@
 - three 0.186.1 existe no npm.
 - cdn.jsdelivr.net: **NÃO VERIFIQUEI** (bloqueado neste ambiente).
 
+## Foto do hero (com e sem barba)
+
+- Pessoa **fictícia**, imagem gerada por IA no conector do Figma (`generate_image`, modelo `gpt-image-2.5-sunburst`), como um díptico "mesma foto, com barba | sem barba". Arquivo no Figma: https://www.figma.com/design/oYEvLCgCuIZwE5g1eh4jCH
+- Baixada pelo `get_screenshot` do conector (o domínio www.figma.com é bloqueado neste ambiente) e separada/alinhada com `ferramentas/separar-barba.py`.
+- Não foi usada foto de pessoa real: editar o rosto de alguém identificável sem consentimento não é aceitável.
+
 ## Pendências
 
 - **Conflito de fontes:** este briefing pede Bebas Neue/Oswald + Inter/Manrope; a Direção A escolhida (e o `.ux-profile.md` atual) usa Big Shoulders Display + Barlow.

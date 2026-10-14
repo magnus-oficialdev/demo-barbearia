@@ -68,6 +68,9 @@
   /* Medidas */
   --largura-max: 1200px;
   --largura-texto: 65ch;
+  /* Quanto a foto do hero passa da borda direita no desktop: mais em telas médias,
+     para o rosto não ficar atrás do "22" (≈ 13,5rem em 1024 px, ≈ 7rem em 1440 px) */
+  --foto-recuo: clamp(0rem, calc(29rem - 24.5vw), 14rem);
   --largura-estreita: 44rem;      /* seções de uma coluna só */
   --largura-ampla: 1440px;        /* galeria de ponta a ponta */
   --largura-traco: 320px;         /* assinatura: traço da navalha */
@@ -95,6 +98,10 @@
   /* Sombras (tema escuro: luz de borda, sem brilho) */
   --sombra-borda: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --sombra-flutuante: 0 -8px 24px rgba(0, 0, 0, 0.4);
+
+  /* Véu sobre a foto do hero (legibilidade do texto) */
+  --veu-foto: rgba(22, 22, 22, 0.84);
+  --veu-foto-desktop: linear-gradient(to right, rgba(22, 22, 22, 0.35), transparent 45%);
 
   /* Movimento (Padrão Magnus: 0,4–0,9 s, só transform e opacity — ver docs/briefing.md) */
   --mov-curto: 0.4s;
@@ -267,7 +274,35 @@ a { color: inherit; }
 
 /* ============ HERO ============ */
 /* Eixo central: "Ofício" | poste | "22", com o texto centralizado abaixo. */
-.hero { border-bottom: var(--borda-fina) solid var(--cor-borda); }
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+}
+
+/* Foto de fundo (homem barbudo). Celular: atmosfera escurecida atrás do texto.
+   Desktop: à direita, fundindo no carvão, e o cursor "faz a barba". */
+.hero__foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.hero__foto > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hero__foto-base { object-fit: cover; }
+.hero__foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--veu-foto);
+}
+
 .hero__interno {
   max-width: var(--largura-max);
   margin-inline: auto;
@@ -705,6 +740,16 @@ a { color: inherit; }
   .topo__nav a:hover { color: var(--cor-texto); }
 
   .hero__interno { padding: var(--esp-5) var(--esp-5) var(--esp-7); }
+  /* Foto à direita, na proporção dela (o pincel do cursor usa a mesma caixa) */
+  .hero__foto {
+    inset: 0 calc(-1 * var(--foto-recuo)) 0 auto;
+    aspect-ratio: 768 / 864;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 45%), linear-gradient(to top, transparent, #000 20%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent, #000 45%), linear-gradient(to top, transparent, #000 20%);
+    mask-composite: intersect;
+  }
+  .hero__foto::after { background: var(--veu-foto-desktop); }
 
   .secao { padding-block: var(--esp-8); }
   .secao__interno { padding-inline: var(--esp-5); }

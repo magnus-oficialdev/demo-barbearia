@@ -72,6 +72,11 @@
 
     <!-- HERO -->
     <section class="hero" id="inicio" aria-labelledby="hero-titulo">
+      <!-- Fundo: homem barbudo (pessoa fictícia, imagem gerada por IA). No desktop, por onde
+           o mouse passa a barba some: a foto sem barba é pintada no rastro do cursor. -->
+      <div class="hero__foto" data-entrada data-revelada="img/barbeiro-sem-barba.webp" aria-hidden="true">
+        <img class="hero__foto-base" src="img/barbeiro-com-barba.webp" width="768" height="864" alt="" decoding="async">
+      </div>
       <div class="hero__interno">
         <div class="hero__palco">
           <!-- "Ofício" | poste | "22" na mesma grade: se a fonte mudar de largura, o poste é empurrado, não sobreposto. -->

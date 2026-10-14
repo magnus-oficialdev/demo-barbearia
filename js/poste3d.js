@@ -315,7 +315,8 @@ export async function iniciarPoste(palco, { aoFicarPronto, aoFalhar } = {}) {
 
   const quadro = (agora) => {
     if (perdido) { rodando = false; return; }
-    const dt = Math.min((agora - ultimo) / 1000, 0.1);
+    // O carimbo do rAF pode vir antes do performance.now() de acordar(): dt nunca negativo
+    const dt = Math.min(Math.max((agora - ultimo) / 1000, 0), 0.1);
     ultimo = agora;
     const k = 1 - Math.exp(-SUAVIDADE * dt);
     // giro: suavizado e com velocidade máxima (meia volta por segundo)

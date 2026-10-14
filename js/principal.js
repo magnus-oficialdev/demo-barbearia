@@ -25,12 +25,14 @@ function entradaDoHero() {
   gsap.set('.hero__palavra--esq', { opacity: 0, xPercent: -12 });
   gsap.set('.hero__palavra--dir', { opacity: 0, xPercent: 12 });
   gsap.set('.hero__poste', { opacity: 0, y: 40 });
+  gsap.set('.hero__foto', { opacity: 0 });
   gsap.set('.hero__texto [data-entrada]', { opacity: 0, y: 16 });
   liberarTexto();
 
   // Uma única sequência de 0,9 s: palavras se abrem, o poste sobe, o texto entra.
   return gsap.timeline({ defaults: { ease: 'power3.out' } })
-    .to('.hero__palavra', { opacity: 1, xPercent: 0, duration: 0.7 })
+    .to('.hero__foto', { opacity: 1, duration: 0.9, ease: 'power2.out' })
+    .to('.hero__palavra', { opacity: 1, xPercent: 0, duration: 0.7 }, 0)
     .to('.hero__poste', { opacity: 1, y: 0, duration: 0.7 }, '<0.05')
     .to('.hero__texto [data-entrada]', { opacity: 1, y: 0, duration: 0.45, stagger: 0.05 }, '<0.15')
     .then(() => {});
@@ -193,7 +195,24 @@ function barraDeAgendar() {
   }).observe(botaoHero);
 }
 
+/* ---------- Hero: o cursor faz a barba ---------- */
+
+// Só em telas com mouse (no toque não há "passar por cima"), sem movimento reduzido,
+// e só depois da entrada do hero. A foto sem barba nem é baixada fora disso.
+function navalhaDoCursor(depoisDaEntrada) {
+  const caixa = document.querySelector('.hero__foto');
+  if (!caixa || !caixa.dataset.revelada || movimentoReduzido) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  depoisDaEntrada
+    .then(() => import('./revelar-barba.js'))
+    .then(({ iniciarRevelacao }) => iniciarRevelacao(caixa, { srcRevelada: caixa.dataset.revelada }))
+    .then(() => { raiz.dataset.navalha = 'ativa'; })
+    .catch((erro) => console.warn('Efeito da barba indisponível.', erro));
+}
+
 barraDeAgendar();
-carregarPoste(entradaDoHero());
+const fimDaEntrada = entradaDoHero();
+carregarPoste(fimDaEntrada);
+navalhaDoCursor(fimDaEntrada);
 revelarAoRolar();
 assinaturaDaNavalha();
