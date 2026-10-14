@@ -69,8 +69,7 @@
           <li><a href="#horario">Horário</a></li>
         </ul>
       </nav>
-      <!-- TROCAR: número de WhatsApp fictício -->
-      <a class="botao botao--pequeno" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+      <a class="botao botao--pequeno" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
         <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
         Agendar
       </a>
@@ -108,14 +107,13 @@
           <p class="hero__chamada" data-entrada>Barbearia de bairro. Hora marcada, sem fila.</p>
           <p class="hero__apoio" data-entrada>Dois barbeiros, uma cadeira de cada vez. Você marca pelo WhatsApp, chega no horário e senta.</p>
           <div class="hero__acoes" data-entrada>
-            <!-- TROCAR: número de WhatsApp fictício -->
-            <a class="botao" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+            <a class="botao" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
               <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
               Agendar pelo WhatsApp
             </a>
             <a class="link" href="#servicos">Ver serviços e preços</a>
           </div>
-          <p class="hero__fundacao" data-entrada>Desde 2022 <span class="nota-demo">(data fictícia)</span></p>
+          <p class="hero__fundacao" data-entrada>Desde 2022 na Av. Raul Lopes</p>
         </div>
       </div>
     </section>
@@ -174,9 +172,10 @@
       </div>
     </section>
 
-    <!-- RITUAL — estreito, uma coluna. Destaque: a linha que liga os três passos (é uma sequência real). -->
+    <!-- RITUAL — passos ligados por uma linha (sequência real) + a foto da toalha quente. -->
     <section class="secao secao--faixa" id="ritual" aria-labelledby="ritual-titulo">
-      <div class="secao__interno secao__interno--estreito">
+      <div class="secao__interno ritual-grade">
+        <div class="ritual-grade__texto">
         <div data-revelar>
           <h2 class="secao__titulo" id="ritual-titulo">O ritual</h2>
           <p class="secao__intro">Todo atendimento segue os mesmos três passos. Sem pressa, sem pular nenhum.</p>
@@ -195,6 +194,11 @@
             <p>Contorno na navalha, pós-barba e o espelho na sua mão. Só termina quando você aprova.</p>
           </li>
         </ol>
+        </div>
+        <figure class="ritual-grade__foto" data-revelar>
+          <img class="foto" src="img/ritual-toalha.webp" width="960" height="1280" loading="lazy" decoding="async"
+               alt="Cliente reclinado na cadeira com a toalha quente no rosto, o barbeiro ajeitando a toalha.">
+        </figure>
       </div>
     </section>
 
@@ -204,32 +208,28 @@
         <div class="equipe__texto" data-revelar>
           <h2 class="secao__titulo" id="barbeiros-titulo">Quem corta</h2>
           <div class="equipe__historia">
-            <p>Seu Raimundo cortou cabelo a vida inteira. Quando abriu a Ofício 22, trouxe o filho para a cadeira do lado e passou o ofício do jeito que aprendeu: olhando a mão de quem sabe.</p>
-            <p>Hoje é o filho quem toca a casa, com mais um barbeiro. O jeito de trabalhar não mudou: uma cadeira de cada vez, hora marcada e acabamento na navalha.</p>
-            <p class="nota-demo">[CONFIRMAR: nomes e história — personagens fictícios]</p>
+            <p>Seu Raimundo pegou na tesoura aos 16 anos, numa barbearia de esquina no Centro. Foram mais de trinta anos atendendo na cadeira dos outros até abrir a Ofício 22, em 2022, na Raul Lopes.</p>
+            <p>O 22 é do ano e é das cadeiras: duas cadeiras, dois barbeiros. Quem toca a casa hoje é o Davi, filho dele, que aprendeu o ofício olhando a mão do pai. Do lado, o Tiago, que chegou como aprendiz e ficou.</p>
+            <p>Seu Raimundo ainda aparece quase todo sábado. Diz que é pelo café.</p>
           </div>
           <aside class="bairro" aria-labelledby="bairro-titulo">
             <h3 class="bairro__titulo" id="bairro-titulo">Coisa do bairro</h3>
-            <p>O café vem da padaria da esquina, passado na hora. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+            <p>O café vem da padaria da esquina, passado na hora. Pode pedir.</p>
           </aside>
         </div>
 
         <div class="equipe__fotos" data-revelar>
           <article class="barbeiro barbeiro--principal">
-            <div class="foto-exemplo foto-exemplo--retrato" role="img" aria-label="Foto de exemplo do barbeiro que toca a casa">
-              <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pessoa"/></svg>
-              <span>[FOTO DE EXEMPLO]</span>
-            </div>
-            <h3 class="barbeiro__nome">[NOME DO FILHO]</h3>
-            <p class="barbeiro__papel">Toca a casa. Corte clássico, acabamento na tesoura. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+            <img class="foto foto--retrato" src="img/barbeiro-davi.webp" width="768" height="960" loading="lazy" decoding="async"
+                 alt="Davi, de avental escuro e braços cruzados, segurando uma tesoura.">
+            <h3 class="barbeiro__nome">Davi</h3>
+            <p class="barbeiro__papel">Toca a casa. Corte clássico e acabamento na tesoura.</p>
           </article>
           <article class="barbeiro barbeiro--segundo">
-            <div class="foto-exemplo foto-exemplo--retrato" role="img" aria-label="Foto de exemplo do segundo barbeiro">
-              <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pessoa"/></svg>
-              <span>[FOTO DE EXEMPLO]</span>
-            </div>
-            <h3 class="barbeiro__nome">[NOME DO SEGUNDO BARBEIRO]</h3>
-            <p class="barbeiro__papel">Mão firme na navalha. É quem você procura para barba. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+            <img class="foto foto--retrato" src="img/barbeiro-tiago.webp" width="768" height="960" loading="lazy" decoding="async"
+                 alt="Tiago, de avental escuro, segurando uma navalha fechada.">
+            <h3 class="barbeiro__nome">Tiago</h3>
+            <p class="barbeiro__papel">Mão firme na navalha. É quem você procura para barba e contorno.</p>
           </article>
         </div>
       </div>
@@ -240,7 +240,7 @@
       <div class="secao__interno" data-revelar>
         <h2 class="regra__titulo" id="regra-titulo">A regra da casa</h2>
         <p class="regra__frase">Hora marcada é hora marcada.</p>
-        <p class="regra__apoio">Chegou, sentou. Se atrasar mais de 15 minutos, a gente remarca para não atrasar o próximo. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+        <p class="regra__apoio">Chegou, sentou. Se atrasar mais de 15 minutos, a gente remarca para não atrasar o próximo.</p>
       </div>
     </section>
 
@@ -248,36 +248,37 @@
     <section class="secao secao--faixa" id="galeria" aria-labelledby="galeria-titulo">
       <div class="secao__interno" data-revelar>
         <h2 class="secao__titulo" id="galeria-titulo">Galeria</h2>
-        <p class="secao__intro">Cortes feitos aqui. <span class="nota-demo">[FOTOS DE EXEMPLO]</span></p>
+        <p class="secao__intro">O tipo de corte e de acabamento que sai das nossas cadeiras.</p>
+        <p class="nota-demo">Imagens ilustrativas, geradas por IA.</p>
       </div>
       <ul class="galeria" data-revelar>
         <li class="galeria__item galeria__item--destaque">
           <figure>
-            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: degradê baixo"><span>[FOTO DE EXEMPLO]</span></div>
+            <img class="foto" src="img/galeria-degrade.webp" width="1024" height="1024" loading="lazy" decoding="async" alt="Nuca de um cliente com degradê baixo recém-feito, topo texturizado.">
             <figcaption>Degradê baixo</figcaption>
           </figure>
         </li>
         <li class="galeria__item">
           <figure>
-            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: barba desenhada"><span>[FOTO DE EXEMPLO]</span></div>
+            <img class="foto" src="img/galeria-barba.webp" width="476" height="633" loading="lazy" decoding="async" alt="Barba cheia com o contorno da bochecha bem marcado.">
             <figcaption>Barba desenhada</figcaption>
           </figure>
         </li>
         <li class="galeria__item">
           <figure>
-            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: corte social na tesoura"><span>[FOTO DE EXEMPLO]</span></div>
+            <img class="foto" src="img/galeria-social.webp" width="474" height="633" loading="lazy" decoding="async" alt="Mãos do barbeiro cortando na tesoura e no pente um social com risca.">
             <figcaption>Social na tesoura</figcaption>
           </figure>
         </li>
         <li class="galeria__item">
           <figure>
-            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: navalha no contorno"><span>[FOTO DE EXEMPLO]</span></div>
+            <img class="foto" src="img/galeria-navalha.webp" width="476" height="637" loading="lazy" decoding="async" alt="Navalha fazendo o contorno da nuca com espuma de barbear.">
             <figcaption>Contorno na navalha</figcaption>
           </figure>
         </li>
         <li class="galeria__item">
           <figure>
-            <div class="foto-exemplo" role="img" aria-label="Foto de exemplo: a cadeira da casa"><span>[FOTO DE EXEMPLO]</span></div>
+            <img class="foto" src="img/galeria-cadeira.webp" width="474" height="637" loading="lazy" decoding="async" alt="Cadeira de barbeiro antiga, de couro preto e cromo, com uma toalha no braço.">
             <figcaption>A cadeira</figcaption>
           </figure>
         </li>
@@ -300,19 +301,26 @@
           <p class="nota-demo">Horário de exemplo. [TEXTO DE EXEMPLO]</p>
           <address class="endereco">
             <svg class="icone" aria-hidden="true"><use href="#i-pino"/></svg>
-            <span>[ENDEREÇO DE EXEMPLO], [BAIRRO], [CIDADE]</span>
+            <!-- CONFIRMAR: número e bairro -->
+            <span>Av. Raul Lopes — Teresina, PI</span>
           </address>
           <p class="local__chamada">Escolha o horário pelo WhatsApp. A gente confirma na hora.</p>
-          <!-- TROCAR: número de WhatsApp fictício -->
-          <a class="botao" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+          <a class="botao" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
             <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
             Agendar pelo WhatsApp
           </a>
         </div>
-        <div class="foto-exemplo local__mapa" role="img" aria-label="Mapa de exemplo" data-revelar>
-          <svg class="icone icone--grande" aria-hidden="true"><use href="#i-pino"/></svg>
-          <span>[MAPA DE EXEMPLO]</span>
-        </div>
+        <figure class="local__foto" data-revelar>
+          <img class="foto" src="img/barbearia-interior.webp" width="1200" height="900" loading="lazy" decoding="async"
+               alt="Interior da barbearia: duas cadeiras de barbeiro de couro preto diante de espelhos, luz âmbar.">
+          <figcaption class="local__legenda">
+            <span>Duas cadeiras, uma de cada vez.</span>
+            <a class="link" href="https://www.google.com/maps/search/?api=1&amp;query=Av.%20Raul%20Lopes%2C%20Teresina%20-%20PI" target="_blank" rel="noopener">
+              <svg class="icone" aria-hidden="true"><use href="#i-pino"/></svg>
+              Abrir no mapa
+            </a>
+          </figcaption>
+        </figure>
       </div>
     </section>
   </main>
@@ -321,16 +329,15 @@
     <div class="rodape__interno">
       <p class="rodape__marca">Ofício 22</p>
       <p>Barbearia de bairro. Hora marcada, sem fila.</p>
-      <!-- TROCAR: número de WhatsApp fictício -->
-      <p><a class="link" href="https://wa.me/5586999999999" target="_blank" rel="noopener">WhatsApp (86) 99999-9999</a> <span class="nota-demo">(número fictício)</span></p>
-      <p class="rodape__legal">Projeto de demonstração Magnus. Marca, pessoas, história, endereço, telefone e preços são fictícios.</p>
+      <p><a class="link" href="https://wa.me/558699436939" target="_blank" rel="noopener">WhatsApp (86) 9943-6939</a></p>
+      <p>Av. Raul Lopes — Teresina, PI</p>
+      <p class="rodape__legal">Projeto de demonstração Magnus. Marca, pessoas, história e preços são fictícios; fotos ilustrativas geradas por IA.</p>
     </div>
   </footer>
 
   <!-- Barra fixa de agendamento (só no celular). Aparece depois que o botão do hero sai da tela. -->
   <div class="barra-agendar">
-    <!-- TROCAR: número de WhatsApp fictício -->
-    <a class="botao botao--largo" href="https://wa.me/5586999999999?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
+    <a class="botao botao--largo" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022." target="_blank" rel="noopener">
       <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
       Agendar pelo WhatsApp
     </a>

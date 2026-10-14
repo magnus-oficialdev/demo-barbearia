@@ -27,6 +27,13 @@
 - Baixada pelo `get_screenshot` do conector (o domínio www.figma.com é bloqueado neste ambiente) e separada/alinhada com `ferramentas/separar-barba.py`.
 - Não foi usada foto de pessoa real: editar o rosto de alguém identificável sem consentimento não é aceitável.
 
+## Dados do cliente e imagens das seções
+
+- WhatsApp informado: (86) 9943-6939 → `https://wa.me/558699436939`. **CONFIRMAR** se é celular com o 9 extra, (86) 9 9943-6939.
+- Endereço informado: Raul Lopes. Página mostra "Av. Raul Lopes — Teresina, PI" (cidade deduzida do DDD 86). **CONFIRMAR** número, bairro e cidade.
+- História, nomes (Seu Raimundo, Davi, Tiago) e a regra da casa: inventados, a pedido.
+- Fotos dos barbeiros, da galeria, do ritual e do interior: pessoas e lugar **fictícios**, geradas por IA no Figma (mesmo arquivo do hero, `gpt-image-2.5-sunburst`), recortadas aqui. A página avisa que são ilustrativas. O poste vermelho e azul que veio na foto do interior foi cortado (fora da paleta).
+
 ## Pendências
 
 - **Conflito de fontes:** este briefing pede Bebas Neue/Oswald + Inter/Manrope; a Direção A escolhida (e o `.ux-profile.md` atual) usa Big Shoulders Display + Barlow.

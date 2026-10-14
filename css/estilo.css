@@ -71,7 +71,6 @@
   /* Quanto a foto do hero passa da borda direita no desktop: mais em telas médias,
      para o rosto não ficar atrás do "22" (≈ 13,5rem em 1024 px, ≈ 7rem em 1440 px) */
   --foto-recuo: clamp(0rem, calc(29rem - 24.5vw), 14rem);
-  --largura-estreita: 44rem;      /* seções de uma coluna só */
   --largura-ampla: 1440px;        /* galeria de ponta a ponta */
   --largura-traco: 320px;         /* assinatura: traço da navalha */
   --traco-navalha: 3;
@@ -226,20 +225,17 @@ a { color: inherit; }
 }
 .link:hover { color: var(--cor-acento); }
 
-.foto-exemplo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--esp-2);
-  aspect-ratio: 4 / 3;
+/* Fotos (geradas por IA, ilustrativas) */
+.foto {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
   background: var(--cor-superficie-2);
   border: var(--borda-fina) solid var(--cor-borda);
   border-radius: var(--raio-2);
-  color: var(--cor-texto-suave);
-  font-size: var(--texto-secundario);
 }
-.foto-exemplo--retrato { aspect-ratio: 4 / 5; }
+.foto--retrato { aspect-ratio: 4 / 5; }
 
 /* ============ TOPO ============ */
 .topo {
@@ -306,7 +302,7 @@ a { color: inherit; }
 .hero__interno {
   max-width: var(--largura-max);
   margin-inline: auto;
-  padding: var(--esp-5) var(--esp-3) var(--esp-7);
+  padding: var(--esp-5) var(--esp-3) var(--esp-6);
   text-align: center;
 }
 
@@ -378,7 +374,7 @@ a { color: inherit; }
 /* ============ SEÇÕES ============ */
 /* Ritmo: largo (serviços) → estreito (ritual) → texto longo + imagem grande (equipe)
    → faixa âmbar (regra) → de ponta a ponta (galeria) → dividido (horário). */
-.secao { padding-block: var(--esp-7); }
+.secao { padding-block: var(--esp-6); }
 .secao--faixa {
   background: var(--cor-superficie);
   border-block: var(--borda-fina) solid var(--cor-borda);
@@ -388,7 +384,6 @@ a { color: inherit; }
   margin-inline: auto;
   padding-inline: var(--esp-3);
 }
-.secao__interno--estreito { max-width: var(--largura-estreita); }
 .secao__titulo {
   font-family: var(--fonte-titulo);
   font-weight: var(--peso-titulo);
@@ -476,7 +471,9 @@ a { color: inherit; }
   font-weight: var(--peso-semi);
 }
 
-/* --- Ritual: coluna estreita, passos ligados por uma linha (sequência real) --- */
+/* --- Ritual: passos ligados por uma linha (sequência real) + foto da toalha quente --- */
+.ritual-grade { display: grid; gap: var(--esp-6); }
+.ritual-grade__foto .foto { aspect-ratio: 4 / 5; }
 .ritual {
   counter-reset: passo;
   display: grid;
@@ -569,7 +566,7 @@ a { color: inherit; }
 
 /* --- A regra da casa: faixa âmbar de ponta a ponta --- */
 .regra {
-  padding-block: var(--esp-7);
+  padding-block: var(--esp-6);
   background: var(--cor-acento);
   color: var(--cor-sobre-acento);
 }
@@ -605,8 +602,8 @@ a { color: inherit; }
 }
 .galeria__item--destaque { grid-column: 1 / -1; }
 .galeria figure { display: grid; gap: var(--esp-2); }
-.galeria .foto-exemplo { aspect-ratio: 4 / 5; }
-.galeria__item--destaque .foto-exemplo { aspect-ratio: 4 / 3; }
+.galeria .foto { aspect-ratio: 4 / 5; }
+.galeria__item--destaque .foto { aspect-ratio: 4 / 3; }
 .galeria figcaption { font-size: var(--texto-secundario); color: var(--cor-texto-suave); }
 
 /* --- Horário e mapa --- */
@@ -635,7 +632,18 @@ a { color: inherit; }
   font-style: normal;
 }
 .local__chamada { margin-bottom: var(--esp-3); }
-.local__mapa { aspect-ratio: 4 / 3; }
+.local__foto { display: grid; gap: var(--esp-2); }
+.local__foto .foto { aspect-ratio: 4 / 3; }
+.local__legenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2) var(--esp-4);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-secundario);
+}
+.local__legenda .link { gap: var(--esp-2); font-size: var(--texto-corpo); }
 
 /* ============ RODAPÉ ============ */
 .rodape {
@@ -718,7 +726,7 @@ a { color: inherit; }
   }
   .galeria__item--destaque { grid-column: span 2; grid-row: span 2; }
   .galeria__item--destaque figure { height: 100%; grid-template-rows: 1fr auto; }
-  .galeria__item--destaque .foto-exemplo { aspect-ratio: auto; height: 100%; }
+  .galeria__item--destaque .foto { aspect-ratio: auto; height: 100%; }
 
   .equipe__fotos { grid-template-columns: 7fr 5fr; align-items: start; }
   .barbeiro--segundo { width: auto; margin-top: var(--esp-8); }
@@ -754,16 +762,32 @@ a { color: inherit; }
   }
   .hero__foto::after { background: var(--veu-foto-desktop); }
 
-  .secao { padding-block: var(--esp-8); }
+  .secao { padding-block: var(--esp-7); }
   .secao__interno { padding-inline: var(--esp-5); }
   .secao__titulo { font-size: var(--texto-6); }
 
-  .servicos__grade {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
-    gap: var(--esp-7);
-    align-items: start;
+  /* Serviços: cabeçalho em linha e cardápio em duas colunas (sem coluna vazia ao lado) */
+  .servicos__grade { gap: var(--esp-5); }
+  .servicos__cabeca {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--esp-7);
+    align-items: end;
   }
-  .cardapio__item { padding: var(--esp-4); }
+  .servicos__cabeca > .secao__titulo,
+  .servicos__cabeca > .traco-navalha { grid-column: 1; }
+  .servicos__cabeca > p { grid-column: 2; }
+  .servicos__cabeca > .secao__intro { grid-row: 1 / span 2; align-self: end; margin-top: 0; }
+  .servicos__cabeca > .nota-demo { grid-row: 3; }
+  .cardapio {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--borda-fina);
+    background: var(--cor-borda); /* as frestas de 1px viram as divisórias */
+  }
+  .cardapio__item { padding: var(--esp-4); background: var(--cor-superficie); }
+  .cardapio__item + .cardapio__item { border-top: 0; }
+  .cardapio__item--destaque { grid-column: 1 / -1; background: var(--cor-acento); }
 
   .equipe {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
@@ -771,14 +795,21 @@ a { color: inherit; }
     align-items: start;
   }
 
-  .regra { padding-block: var(--esp-8); }
+  .regra { padding-block: var(--esp-7); }
+
+  .ritual-grade {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--esp-7);
+    align-items: center;
+  }
+  .ritual-grade__foto .foto { aspect-ratio: 3 / 4; }
 
   .rodape__interno { padding-inline: var(--esp-5); }
 
   .local {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: var(--esp-6);
-    align-items: start;
+    align-items: center;
   }
 
   /* No desktop o selo vira faixa no rodapé da janela (sem cobrir conteúdo de forma permanente) */
