@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ofício 22 — Barbearia de bairro com hora marcada</title>
+  <meta name="description" content="Barbearia de bairro com dois barbeiros. Corte e barba com hora marcada pelo WhatsApp, sem fila. Projeto de demonstração.">
+  <!-- Prévia do link ao compartilhar (WhatsApp, Instagram). A imagem precisa de endereço absoluto. -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Ofício 22 — Barbearia de bairro com hora marcada">
+  <meta property="og:description" content="Corte e barba com hora marcada pelo WhatsApp, sem fila. Projeto de demonstração Magnus.">
+  <meta property="og:url" content="https://magnus-oficialdev.github.io/demo-barbearia/">
+  <meta property="og:image" content="https://magnus-oficialdev.github.io/demo-barbearia/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Ofício 22: o nome em letras grandes com um poste de barbearia entre as palavras">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#161616">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#161616">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700&family=Yellowtail&display=swap">
+  <link rel="stylesheet" href="css/estilo.css">
+  <script>
+    document.documentElement.classList.add('js');
+    // Esconde o texto do hero só enquanto a entrada em GSAP não começa.
+    // Rede de segurança: em no máximo 1,5 s o texto aparece, mesmo se o GSAP
+    // ou o principal.js atrasarem ou falharem. Com movimento reduzido, nada é escondido.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('entrada');
+      window.__segurancaEntrada = setTimeout(function () {
+        document.documentElement.classList.remove('entrada');
+      }, 1500);
+    }
+    // Blocos das seções que entram ao rolar começam escondidos antes da 1ª pintura
+    // (evita aparecerem e sumirem). Mesma rede de segurança de 1,5 s.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      document.documentElement.classList.add('revelar');
+      window.__segurancaRevelar = setTimeout(function () {
+        document.documentElement.classList.remove('revelar');
+      }, 1500);
+    }
+    // Barra fixa de agendar (celular) começa escondida: o botão do hero já está na tela.
+    // Se o js/barra.js não assumir em 1,5 s, a barra volta a aparecer.
+    document.documentElement.classList.add('barra-oculta');
+    setTimeout(function () {
+      if (!window.__barraControlada) document.documentElement.classList.remove('barra-oculta');
+    }, 1500);
+  </script>
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three@0.186.1/three.module.min.js" } }
+  </script>
+  <script src="js/barra.js" defer></script>
+  <script src="vendor/gsap@3.15.0/gsap.min.js" defer></script>
+  <script src="vendor/gsap@3.15.0/DrawSVGPlugin.min.js" defer></script>
+  <script src="js/principal.js" defer></script>
+  <script src="js/agendar.js" defer></script>
+</head>
+<body>
+  <!-- Ícones Lucide (lucide-static v1.56.0, ISC) -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-mensagem" viewBox="0 0 24 24"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></symbol>
+    <symbol id="i-cafe" viewBox="0 0 24 24"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></symbol>
+    <symbol id="i-chama" viewBox="0 0 24 24"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></symbol>
+    <symbol id="i-tesoura" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></symbol>
+    <symbol id="i-relogio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-pino" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-alerta" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
+    <symbol id="i-pessoa" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  </svg>
+
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="topo__interno">
+      <a class="topo__marca" href="#inicio">Ofício 22</a>
+      <nav class="topo__nav" aria-label="Seções">
+        <ul>
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#ritual">Ritual</a></li>
+          <li><a href="#barbeiros">Barbeiros</a></li>
+          <li><a href="#galeria">Galeria</a></li>
+          <li><a href="#horario">Horário</a></li>
+        </ul>
+      </nav>
+      <a class="botao botao--pequeno" href="#agendar">
+        <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
+        Agendar
+      </a>
+    </div>
+  </header>
+
+  <main id="conteudo">
+
+    <!-- HERO -->
+    <section class="hero" id="inicio" aria-labelledby="hero-titulo">
+      <!-- Fundo: homem barbudo (pessoa fictícia, imagem gerada por IA). No desktop, por onde
+           o mouse passa a barba some: a foto sem barba é pintada no rastro do cursor. -->
+      <div class="hero__foto" data-entrada data-revelada="img/barbeiro-sem-barba.webp" aria-hidden="true">
+        <img class="hero__foto-base" src="img/barbeiro-com-barba.webp" width="768" height="864" alt="" decoding="async">
+      </div>
+      <div class="hero__interno">
+        <div class="hero__palco">
+          <!-- "Ofício" | poste | "22" na mesma grade: se a fonte mudar de largura, o poste é empurrado, não sobreposto. -->
+          <h1 class="hero__marca" id="hero-titulo" aria-label="Ofício 22">
+            <span class="hero__palavra hero__palavra--esq" data-entrada>Ofício</span>
+            <!-- Poste: imagem estática gerada do próprio 3D (plano B e espera do carregamento).
+                 O canvas 3D entra por cima quando estiver pronto. -->
+            <span class="hero__poste" data-entrada aria-hidden="true">
+              <img class="hero__poste-img"
+                   src="img/poste-480.webp"
+                   srcset="img/poste-240.webp 240w, img/poste-480.webp 480w"
+                   sizes="(min-width: 1184px) 160px, calc(12vw + 18px)"
+                   width="480" height="1387" alt="" decoding="async">
+            </span>
+            <span class="hero__palavra hero__palavra--dir" data-entrada>22</span>
+          </h1>
+        </div>
+
+        <div class="hero__texto">
+          <p class="hero__chamada" data-entrada>Barbearia de bairro. Hora marcada, <span class="destaque">sem fila</span>.</p>
+          <p class="hero__apoio" data-entrada>Dois barbeiros, uma cadeira de cada vez. Você marca pelo WhatsApp, chega no horário e senta.</p>
+          <div class="hero__acoes" data-entrada>
+            <a class="botao" href="#agendar">
+              <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
+              Agendar horário
+            </a>
+            <a class="link" href="#servicos">Ver serviços e preços</a>
+          </div>
+          <p class="hero__fundacao" data-entrada>Desde 2022 na Av. Raul Lopes</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVIÇOS — largo, duas colunas. Destaque: o combo em faixa âmbar. Assinatura: traço da navalha. -->
+    <section class="secao servicos" id="servicos" aria-labelledby="servicos-titulo">
+      <div class="secao__interno servicos__grade">
+        <div class="servicos__cabeca" data-revelar>
+          <h2 class="secao__titulo" id="servicos-titulo">Serviços e preços</h2>
+          <!-- Assinatura da marca: o traço da navalha se desenha ao entrar na seção (GSAP DrawSVG). -->
+          <svg class="traco-navalha" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path class="traco-navalha__linha" d="M4 19 C 96 7, 236 3, 396 9"/>
+          </svg>
+          <p class="secao__intro">Preço fechado, sem surpresa no fim. O tempo de cada serviço já entra na sua reserva.</p>
+          <p class="nota-demo">Valores de exemplo. [TEXTO DE EXEMPLO]</p>
+        </div>
+
+        <ul class="cardapio" data-revelar>
+          <li class="cardapio__item" data-servico="Corte" data-minutos="40" data-preco="45">
+            <div>
+              <h3 class="cardapio__nome">Corte</h3>
+              <p class="cardapio__desc">Tesoura, máquina ou os dois. Lavagem e finalização inclusas.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">40 min</span> <span class="cardapio__preco">R$ 45</span></p>
+          </li>
+          <li class="cardapio__item" data-servico="Barba com toalha quente" data-minutos="30" data-preco="35">
+            <div>
+              <h3 class="cardapio__nome">Barba com toalha quente</h3>
+              <p class="cardapio__desc">Toalha quente, navalha e pós-barba.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">30 min</span> <span class="cardapio__preco">R$ 35</span></p>
+          </li>
+          <li class="cardapio__item cardapio__item--destaque" data-servico="Corte e barba" data-minutos="70" data-preco="70">
+            <div>
+              <p class="cardapio__selo">Combo da casa</p>
+              <h3 class="cardapio__nome">Corte e barba</h3>
+              <p class="cardapio__desc">Os dois serviços numa cadeira só, com o ritual completo.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">70 min</span> <span class="cardapio__preco">R$ 70</span></p>
+          </li>
+          <li class="cardapio__item" data-servico="Pezinho e contorno" data-minutos="15" data-preco="20">
+            <div>
+              <h3 class="cardapio__nome">Pezinho e contorno</h3>
+              <p class="cardapio__desc">Para manter o corte em dia entre uma visita e outra.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">15 min</span> <span class="cardapio__preco">R$ 20</span></p>
+          </li>
+          <li class="cardapio__item" data-servico="Sobrancelha na navalha" data-minutos="10" data-preco="15">
+            <div>
+              <h3 class="cardapio__nome">Sobrancelha na navalha</h3>
+              <p class="cardapio__desc">Só alinha. Ninguém vai notar que você fez.</p>
+            </div>
+            <p class="cardapio__info"><span class="cardapio__tempo">10 min</span> <span class="cardapio__preco">R$ 15</span></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- AGENDAR — a "comanda": serviço, barbeiro, dia e horário; a mensagem sai pronta no WhatsApp.
+         Os serviços vêm do cardápio e os horários da tabela de funcionamento (data-*), uma fonte só. -->
+    <section class="secao secao--faixa agendar" id="agendar" aria-labelledby="agendar-titulo">
+      <div class="secao__interno">
+        <div class="agendar__cabeca" data-revelar>
+          <h2 class="secao__titulo" id="agendar-titulo">Marque <span class="destaque">seu horário</span></h2>
+          <p class="secao__intro">Escolha o serviço, o barbeiro e a hora. A mensagem sai pronta no WhatsApp e a gente confirma por lá.</p>
+        </div>
+
+        <noscript>
+          <p class="agendar__sem-js">Para escolher o horário aqui, ative o JavaScript. Ou
+            <a class="link" href="https://wa.me/558699436939?text=Ol%C3%A1%2C%20quero%20agendar%20um%20hor%C3%A1rio%20na%20Of%C3%ADcio%2022.">chame direto no WhatsApp</a>.</p>
+        </noscript>
+
+        <form class="comanda" id="form-agendar" novalidate data-revelar>
+          <div class="comanda__escolhas">
+            <fieldset class="grupo">
+              <legend class="grupo__titulo">Serviço</legend>
+              <div class="opcoes opcoes--servico" data-opcoes="servico"></div>
+            </fieldset>
+
+            <fieldset class="grupo">
+              <legend class="grupo__titulo">Barbeiro</legend>
+              <div class="opcoes opcoes--barbeiro">
+                <label class="opcao"><input type="radio" name="barbeiro" value="Tanto faz" checked>
+                  <span class="opcao__corpo"><span class="opcao__nome">Tanto faz</span><span class="opcao__meta">Quem estiver livre</span>
+                  <svg class="icone opcao__marca" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+                <label class="opcao"><input type="radio" name="barbeiro" value="Davi">
+                  <span class="opcao__corpo"><span class="opcao__nome">Davi</span><span class="opcao__meta">Corte clássico</span>
+                  <svg class="icone opcao__marca" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+                <label class="opcao"><input type="radio" name="barbeiro" value="Tiago">
+                  <span class="opcao__corpo"><span class="opcao__nome">Tiago</span><span class="opcao__meta">Barba e navalha</span>
+                  <svg class="icone opcao__marca" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="grupo">
+              <legend class="grupo__titulo">Dia</legend>
+              <div class="opcoes opcoes--dia" data-opcoes="dia"></div>
+            </fieldset>
+
+            <fieldset class="grupo" id="grupo-hora">
+              <legend class="grupo__titulo">Horário</legend>
+              <div class="opcoes opcoes--hora" data-opcoes="hora"></div>
+              <p class="aviso-erro" id="hora-erro" hidden>
+                <svg class="icone" aria-hidden="true"><use href="#i-alerta"/></svg>
+                <span>Escolha um horário para a gente reservar a cadeira.</span>
+              </p>
+            </fieldset>
+          </div>
+
+          <!-- A comanda (resumo): faixa de poste em cima e linha de "corte" com a tesoura -->
+          <div class="comanda__resumo">
+            <div class="faixa-poste" aria-hidden="true"></div>
+            <p class="comanda__titulo">Sua comanda</p>
+            <dl class="comanda__lista">
+              <div><dt>Serviço</dt><dd data-resumo="servico">—</dd></div>
+              <div><dt>Barbeiro</dt><dd data-resumo="barbeiro">Tanto faz</dd></div>
+              <div><dt>Quando</dt><dd data-resumo="quando">Escolha o dia e o horário</dd></div>
+              <div><dt>Valor</dt><dd data-resumo="valor">—</dd></div>
+            </dl>
+            <div class="comanda__corte" aria-hidden="true">
+              <svg class="icone"><use href="#i-tesoura"/></svg>
+            </div>
+
+            <div class="comanda__envio" data-etapa="formulario">
+              <div class="campo">
+                <label class="campo__rotulo" for="agendar-nome">Seu nome</label>
+                <input class="campo__entrada" id="agendar-nome" name="nome" type="text" autocomplete="given-name"
+                       required maxlength="60">
+                <p class="aviso-erro" id="nome-erro" hidden>
+                  <svg class="icone" aria-hidden="true"><use href="#i-alerta"/></svg>
+                  <span>Escreva seu nome para a gente saber quem vem.</span>
+                </p>
+              </div>
+              <p class="comanda__rascunho" data-rascunho hidden>
+                Retomamos as escolhas da sua última visita. <button class="link link--botao" type="button" data-descartar>Limpar</button>
+              </p>
+              <button class="botao botao--largo" type="submit">
+                <svg class="icone" aria-hidden="true"><use href="#i-mensagem"/></svg>
+                Agendar pelo WhatsApp
+              </button>
+              <p class="comanda__nota">Horários de exemplo. A confirmação é feita pelo WhatsApp. <span class="nota-demo">[TEXTO DE EXEMPLO]</span></p>
+            </div>
+
+            <div class="comanda__enviada" data-etapa="enviado" role="status" hidden>
+              <p class="comanda__enviada-titulo">Mensagem pronta no WhatsApp.</p>
+              <p>Toque em enviar por lá. A gente responde confirmando o horário.</p>
+              <p><a class="link" data-link-whatsapp href="https://wa.me/558699436939" target="_blank" rel="noopener">Abrir o WhatsApp de novo</a></p>
+              <button class="link link--botao" type="button" data-de-novo>Marcar outro horário</button>
+            </div>
+          </div>
+        </form>
+
+        <p class="agendar__conversar">Prefere conversar antes?
+          <a class="link" href="https://wa.me/558699436939" target="_blank" rel="noopener">Chame no WhatsApp</a></p>
+      </div>
+    </section>
+
+    <!-- RITUAL — passos ligados por uma linha (sequência real) + a foto da toalha quente. -->
+    <section class="secao" id="ritual" aria-labelledby="ritual-titulo">
+      <div class="secao__interno ritual-grade">
+        <div class="ritual-grade__texto">
+        <div data-revelar>
+          <h2 class="secao__titulo" id="ritual-titulo">O ritual</h2>
+          <p class="secao__intro">Todo atendimento segue os mesmos três passos. Sem pressa, sem pular nenhum.</p>
+        </div>
+        <ol class="ritual" data-revelar>
+          <li class="ritual__passo">
+            <h3 class="ritual__nome"><svg class="icone" aria-hidden="true"><use href="#i-cafe"/></svg> Recepção</h3>
+            <p>Café ou água enquanto você conta como quer o corte. A gente escuta antes de pegar a tesoura.</p>
+          </li>
+          <li class="ritual__passo">
+            <h3 class="ritual__nome"><svg class="icone" aria-hidden="true"><use href="#i-chama"/></svg> Toalha quente</h3>
+            <p>Amacia a barba e abre os poros. É o que faz a navalha passar sem irritar.</p>
+          </li>
+          <li class="ritual__passo">
+            <h3 class="ritual__nome"><svg class="icone" aria-hidden="true"><use href="#i-tesoura"/></svg> Acabamento</h3>
+            <p>Contorno na navalha, pós-barba e o espelho na sua mão. Só termina quando você aprova.</p>
+          </li>
+        </ol>
+        </div>
+        <figure class="ritual-grade__foto" data-revelar>
+          <img class="foto" src="img/ritual-toalha.webp" width="960" height="1280" loading="lazy" decoding="async"
+               alt="Cliente reclinado na cadeira com a toalha quente no rosto, o barbeiro ajeitando a toalha.">
+        </figure>
+      </div>
+    </section>
+
+    <!-- QUEM CORTA — texto longo + imagem grande. Destaque: o retrato de quem toca a casa. -->
+    <section class="secao secao--faixa" id="barbeiros" aria-labelledby="barbeiros-titulo">
+      <div class="secao__interno equipe">
+        <div class="equipe__texto" data-revelar>
+          <h2 class="secao__titulo" id="barbeiros-titulo">Quem corta</h2>
+          <div class="equipe__historia">
+            <p>Seu Raimundo pegou na tesoura aos 16 anos, numa barbearia de esquina no Centro. Foram mais de trinta anos atendendo na cadeira dos outros até abrir a Ofício 22, em 2022, na Raul Lopes.</p>
+            <p>O 22 é do ano e é das cadeiras: duas cadeiras, dois barbeiros. Quem toca a casa hoje é o Davi, filho dele, que aprendeu o ofício olhando a mão do pai. Do lado, o Tiago, que chegou como aprendiz e ficou.</p>
+            <p>Seu Raimundo ainda aparece quase todo sábado. Diz que é pelo café.</p>
+          </div>
+          <aside class="bairro" aria-labelledby="bairro-titulo">
+            <h3 class="bairro__titulo" id="bairro-titulo">Coisa do bairro</h3>
+            <p>O café vem da padaria da esquina, passado na hora. Pode pedir.</p>
+          </aside>
+        </div>
+
+        <div class="equipe__fotos" data-revelar>
+          <article class="barbeiro barbeiro--principal">
+            <!-- Selo da casa (elemento temático) -->
+            <svg class="selo" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+              <defs><path id="selo-circulo" d="M60 60 m-43 0 a43 43 0 1 1 86 0 a43 43 0 1 1 -86 0"/></defs>
+              <circle class="selo__fundo" cx="60" cy="60" r="58"/>
+              <circle class="selo__aro" cx="60" cy="60" r="31"/>
+              <text class="selo__texto"><textPath href="#selo-circulo" textLength="268" lengthAdjust="spacing">OFÍCIO 22 • DE PAI PRA FILHO • DESDE 2022 •</textPath></text>
+              <use class="selo__tesoura" href="#i-tesoura" x="46" y="46" width="28" height="28"/>
+            </svg>
+            <img class="foto foto--retrato" src="img/barbeiro-davi.webp" width="768" height="960" loading="lazy" decoding="async"
+                 alt="Davi, de avental escuro e braços cruzados, segurando uma tesoura.">
+            <h3 class="barbeiro__nome">Davi</h3>
+            <p class="barbeiro__papel">Toca a casa. Corte clássico e acabamento na tesoura.</p>
+          </article>
+          <article class="barbeiro barbeiro--segundo">
+            <img class="foto foto--retrato" src="img/barbeiro-tiago.webp" width="768" height="960" loading="lazy" decoding="async"
+                 alt="Tiago, de avental escuro, segurando uma navalha fechada.">
+            <h3 class="barbeiro__nome">Tiago</h3>
+            <p class="barbeiro__papel">Mão firme na navalha. É quem você procura para barba e contorno.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- A REGRA DA CASA — faixa âmbar de ponta a ponta, só tipografia. -->
+    <section class="regra" aria-labelledby="regra-titulo">
+      <div class="secao__interno" data-revelar>
+        <h2 class="regra__titulo" id="regra-titulo">A regra da casa</h2>
+        <p class="regra__frase">Hora marcada é <span class="destaque">hora marcada</span>.</p>
+        <p class="regra__apoio">Chegou, sentou. Se atrasar mais de 15 minutos, a gente remarca para não atrasar o próximo.</p>
+      </div>
+    </section>
+
+    <!-- GALERIA — largo, de ponta a ponta. Destaque: uma foto grande. -->
+    <section class="secao" id="galeria" aria-labelledby="galeria-titulo">
+      <div class="secao__interno" data-revelar>
+        <h2 class="secao__titulo" id="galeria-titulo">Galeria</h2>
+        <p class="secao__intro">O tipo de corte e de acabamento que sai das nossas cadeiras.</p>
+        <p class="nota-demo">Imagens ilustrativas, geradas por IA.</p>
+      </div>
+      <ul class="galeria" data-revelar>
+        <li class="galeria__item galeria__item--destaque">
+          <figure>
+            <img class="foto" src="img/galeria-degrade.webp" width="1024" height="1024" loading="lazy" decoding="async" alt="Nuca de um cliente com degradê baixo recém-feito, topo texturizado.">
+            <figcaption>Degradê baixo</figcaption>
+          </figure>
+        </li>
+        <li class="galeria__item">
+          <figure>
+            <img class="foto" src="img/galeria-barba.webp" width="476" height="633" loading="lazy" decoding="async" alt="Barba cheia com o contorno da bochecha bem marcado.">
+            <figcaption>Barba desenhada</figcaption>
+          </figure>
+        </li>
+        <li class="galeria__item">
+          <figure>
+            <img class="foto" src="img/galeria-social.webp" width="474" height="633" loading="lazy" decoding="async" alt="Mãos do barbeiro cortando na tesoura e no pente um social com risca.">
+            <figcaption>Social na tesoura</figcaption>
+          </figure>
+        </li>
+        <li class="galeria__item">
+          <figure>
+            <img class="foto" src="img/galeria-navalha.webp" width="476" height="637" loading="lazy" decoding="async" alt="Navalha fazendo o contorno da nuca com espuma de barbear.">
+            <figcaption>Contorno na navalha</figcaption>
+          </figure>
+        </li>
+        <li class="galeria__item">
+          <figure>
+            <img class="foto" src="img/galeria-cadeira.webp" width="474" height="637" loading="lazy" decoding="async" alt="Cadeira de barbeiro antiga, de couro preto e cromo, com uma toalha no braço.">
+            <figcaption>A cadeira</figcaption>
+          </figure>
+        </li>
+      </ul>
+    </section>
+
+    <!-- HORÁRIO E MAPA — dividido. Destaque: horário + botão de agendar. -->
+    <section class="secao secao--faixa" id="horario" aria-labelledby="horario-titulo">
+      <div class="secao__interno local">
+        <div class="local__texto" data-revelar>
+          <h2 class="secao__titulo" id="horario-titulo">Horário e endereço</h2>
+          <table class="horario">
+            <caption class="visualmente-oculto">Horário de funcionamento (exemplo)</caption>
+            <tbody>
+              <tr data-dias="2 3 4 5" data-abre="9" data-fecha="20"><th scope="row">Terça a sexta</th><td>9h às 20h</td></tr>
+              <tr data-dias="6" data-abre="8" data-fecha="18"><th scope="row">Sábado</th><td>8h às 18h</td></tr>
+              <tr><th scope="row">Domingo e segunda</th><td>Fechado</td></tr>
+            </tbody>
+          </table>
+          <p class="nota-demo">Horário de exemplo. [TEXTO DE EXEMPLO]</p>
+          <address class="endereco">
+            <svg class="icone" aria-hidden="true"><use href="#i-pino"/></svg>
+            <!-- CONFIRMAR: número e bairro -->
+            <span>Av. Raul Lopes — Teresina, PI</span>
+          </address>
+          <p class="local__chamada">Escolha o horário na comanda e mande pelo WhatsApp. A gente confirma por lá.</p>
+          <a class="botao" href="#agendar">
+            <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
+            Agendar horário
+          </a>
+        </div>
+        <figure class="local__foto" data-revelar>
+          <img class="foto" src="img/barbearia-interior.webp" width="1200" height="900" loading="lazy" decoding="async"
+               alt="Interior da barbearia: duas cadeiras de barbeiro de couro preto diante de espelhos, luz âmbar.">
+          <figcaption class="local__legenda">
+            <span>Duas cadeiras, uma de cada vez.</span>
+            <a class="link" href="https://www.google.com/maps/search/?api=1&amp;query=Av.%20Raul%20Lopes%2C%20Teresina%20-%20PI" target="_blank" rel="noopener">
+              <svg class="icone" aria-hidden="true"><use href="#i-pino"/></svg>
+              Abrir no mapa
+            </a>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="faixa-poste" aria-hidden="true"></div>
+    <div class="rodape__interno">
+      <p class="rodape__marca">Ofício 22</p>
+      <p>Barbearia de bairro. Hora marcada, sem fila.</p>
+      <p><a class="link" href="https://wa.me/558699436939" target="_blank" rel="noopener">WhatsApp (86) 9943-6939</a></p>
+      <p>Av. Raul Lopes — Teresina, PI</p>
+      <p class="rodape__legal">Projeto de demonstração Magnus. Marca, pessoas, história e preços são fictícios; fotos ilustrativas geradas por IA.</p>
+    </div>
+  </footer>
+
+  <!-- Barra fixa de agendamento (só no celular). Aparece depois que o botão do hero sai da tela. -->
+  <div class="barra-agendar">
+    <a class="botao botao--largo" href="#agendar">
+      <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
+      Agendar horário
+    </a>
+  </div>
+
+  <p class="selo-demo">Projeto de demonstração Magnus</p>
+</body>
+</html>

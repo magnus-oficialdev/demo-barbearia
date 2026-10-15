@@ -1,0 +1,1077 @@
+/* Ofício 22 — estilo
+   Mobile-first. Todo valor visual vem dos tokens do :root.
+   Breakpoints ficam em px literais porque media queries não aceitam var(). */
+
+/* ============ FONTE DE RESERVA ============ */
+/* Enquanto a Big Shoulders Display não chega, usa uma fonte do sistema
+   encolhida para ocupar a mesma largura (evita o "OFÍCIO" vazar ou pular). */
+@font-face {
+  font-family: "Big Shoulders reserva";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Bold"), local("Helvetica-Bold"),
+       local("Roboto Bold"), local("Roboto-Bold"), local("Liberation Sans Bold"), local("LiberationSans-Bold");
+  font-weight: 700;
+  size-adjust: 59%;
+}
+
+/* ============ TOKENS ============ */
+:root {
+  /* Cores (60-30-10) — ver .ux-profile.md */
+  --cor-fundo: #161616;          /* L0 carvão fosco — 60% */
+  --cor-superficie: #2B2B2B;     /* L1 grafite — 30% */
+  --cor-superficie-2: #333333;   /* L2 / placeholders */
+  --cor-borda: #3D3D3D;
+  --cor-acento: #F2B630;         /* âmbar — 10%, único acento */
+  --cor-acento-hover: #FFC94A;
+  --cor-sobre-acento: #161616;
+  --cor-texto: #F2F2EE;          /* branco quente */
+  --cor-texto-suave: #9C9C9C;
+
+  /* Tipografia: 2 famílias, 3 pesos */
+  --fonte-titulo: "Big Shoulders Display", "Big Shoulders reserva", "Arial Narrow", sans-serif;
+  --fonte-texto: "Barlow", system-ui, sans-serif;
+  --fonte-destaque: "Yellowtail", "Brush Script MT", cursive; /* letreiro pintado: só em palavras específicas */
+  --peso-regular: 400;
+  --peso-semi: 600;
+  --peso-titulo: 700;
+
+  /* Escala Minor Third (1.2), base 16px */
+  --texto-meta: 0.75rem;         /* 12px — só meta/legal */
+  --texto-secundario: 0.875rem;  /* 14px */
+  --texto-corpo: 1rem;           /* 16px */
+  --texto-1: 1.2rem;             /* 19.2px */
+  --texto-2: 1.44rem;            /* 23px */
+  --texto-3: 1.728rem;           /* 27.6px */
+  --texto-4: 2.074rem;           /* 33.2px */
+  --texto-5: 2.488rem;           /* 39.8px */
+  --texto-6: 2.986rem;           /* 47.8px */
+  --texto-marca-min: 2.986rem;   /* passo 6 — só em telas muito estreitas */
+  --texto-marca-max: 12.84rem;   /* passo 14 */
+  --texto-faixa: clamp(var(--texto-6), 1rem + 7vw, 8.92rem); /* frase da faixa âmbar, até o passo 12 */
+  --marca-razao: 4.2;            /* largura de 2× "OFÍCIO" em em, com folga */
+
+  --entrelinha-display: 1.1;
+  --entrelinha-titulo: 1.2;
+  --entrelinha-corpo: 1.55;
+  --entrelinha-meta: 1.4;
+  --espacamento-titulo: 0.02em;
+
+  /* Espaçamento: múltiplos de 8 (4 só para micro) */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 16px;
+  --esp-4: 24px;
+  --esp-5: 32px;
+  --esp-6: 48px;
+  --esp-7: 64px;
+  --esp-8: 96px;
+  --esp-9: 128px;
+
+  /* Medidas */
+  --largura-max: 1200px;
+  --largura-texto: 65ch;
+  /* Quanto a foto do hero passa da borda direita no desktop: mais em telas médias,
+     para o rosto não ficar atrás do "22" (≈ 13,5rem em 1024 px, ≈ 7rem em 1440 px) */
+  --foto-recuo: clamp(0rem, calc(29rem - 24.5vw), 14rem);
+  --largura-ampla: 1440px;        /* galeria de ponta a ponta */
+  --largura-traco: 320px;         /* assinatura: traço da navalha */
+  --selo: 96px;                   /* selo circular da casa */
+  --listra: 8px;                  /* faixa de poste: largura de cada listra */
+  --traco-navalha: 3;
+  --altura-barra: calc(var(--alvo-toque) + 2 * var(--esp-2) + var(--borda-fina));
+  --alvo-toque: 48px;
+  --borda-fina: 1px;
+  --borda-foco: 2px;
+  --icone: 20px;
+  --icone-grande: 32px;
+  --traco-icone: 2;
+  /* Poste fluido: cresce com a largura e, em telas baixas (notebooks), encolhe para o CTA caber na 1ª tela */
+  --poste-largura: clamp(64px, min(12vw + 18px, (100svh - 400px) * 9 / 26), 160px);
+  --poste-altura: calc(var(--poste-largura) * 26 / 9); /* mesma proporção do 3D */
+  --poste-vao: calc(var(--poste-largura) * 1.25);
+  --altura-topo: calc(var(--alvo-toque) + var(--esp-4));
+  --reserva-base: calc(var(--alvo-toque) + var(--esp-6)); /* barra de agendar + selo, no celular */
+  --largura-apoio: 46ch;
+
+  /* Raios */
+  --raio-1: 4px;
+  --raio-2: 8px;
+  --raio-redondo: 50%;
+
+  /* Sombras (tema escuro: luz de borda, sem brilho) */
+  --sombra-borda: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --sombra-flutuante: 0 -8px 24px rgba(0, 0, 0, 0.4);
+
+  /* Véu sobre a foto do hero (legibilidade do texto) */
+  --veu-foto: rgba(22, 22, 22, 0.84);
+  --veu-foto-desktop: linear-gradient(to right, rgba(22, 22, 22, 0.35), transparent 45%);
+
+  /* Movimento (Padrão Magnus: 0,4–0,9 s, só transform e opacity — ver docs/briefing.md) */
+  --mov-curto: 0.4s;
+  --curva-saida: cubic-bezier(0.16, 1, 0.3, 1);   /* entrar: desacelera */
+  --curva-entrada: cubic-bezier(0.7, 0, 0.84, 0); /* sair: acelera */
+
+  /* Camadas */
+  --z-topo: 10;
+  --z-barra: 100;
+  --z-selo: 110;
+}
+
+/* ============ BASE ============ */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html {
+  /* âncoras e foco do teclado não ficam escondidos atrás do topo e das faixas fixas */
+  scroll-padding-top: var(--altura-topo);
+  scroll-padding-bottom: var(--reserva-base);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rolagem-suave { scroll-behavior: smooth; } /* ligada pelo JS depois que as fontes chegam */
+}
+
+body {
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-texto);
+  font-size: var(--texto-corpo);
+  font-weight: var(--peso-regular);
+  line-height: var(--entrelinha-corpo);
+  -webkit-font-smoothing: antialiased;
+  /* espaço para a barra fixa de agendamento no celular */
+  padding-bottom: var(--reserva-base);
+}
+
+img, svg { display: block; max-width: 100%; }
+
+/* "hidden" sempre vence o display dos componentes (avisos, etapas da comanda) */
+[hidden] { display: none !important; }
+
+ul, ol { padding: 0; list-style: none; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: var(--borda-foco) solid var(--cor-acento);
+  outline-offset: var(--borda-foco);
+}
+
+.sprite { display: none; }
+
+.visualmente-oculto {
+  position: absolute;
+  width: var(--borda-fina);
+  height: var(--borda-fina);
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.pular {
+  position: absolute;
+  left: var(--esp-3);
+  top: calc(-1 * var(--esp-8));
+  z-index: var(--z-selo);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-toque);
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--cor-acento);
+  color: var(--cor-sobre-acento);
+  font-weight: var(--peso-semi);
+  border-radius: var(--raio-1);
+}
+.pular:focus { top: var(--esp-2); }
+
+.icone {
+  width: var(--icone);
+  height: var(--icone);
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--traco-icone);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.icone--grande { width: var(--icone-grande); height: var(--icone-grande); }
+
+.nota-demo {
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-secundario);
+}
+
+/* ============ COMPONENTES ============ */
+.botao {
+  font: inherit; /* <button> não herda a fonte do navegador por padrão */
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  min-height: var(--alvo-toque);
+  padding: var(--esp-2) var(--esp-4);
+  background: var(--cor-acento);
+  color: var(--cor-sobre-acento);
+  font-weight: var(--peso-semi);
+  text-decoration: none;
+  border-radius: var(--raio-1);
+}
+.botao:hover { background: var(--cor-acento-hover); }
+.botao--pequeno { padding: var(--esp-2) var(--esp-3); }
+.botao--largo { width: 100%; }
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-toque);
+  color: var(--cor-texto);
+  text-decoration: underline;
+  text-decoration-color: var(--cor-acento);
+  text-underline-offset: var(--esp-1);
+}
+.link:hover { color: var(--cor-acento); }
+
+/* Fotos (geradas por IA, ilustrativas) */
+.foto {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  background: var(--cor-superficie-2);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+}
+.foto--retrato { aspect-ratio: 4 / 5; }
+
+/* ============ TOPO ============ */
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-topo);
+  background: var(--cor-fundo);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+}
+.topo__interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  max-width: var(--largura-max);
+  margin-inline: auto;
+  padding: var(--esp-2) var(--esp-3);
+}
+.topo__marca {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-toque);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-2);
+  line-height: var(--entrelinha-titulo);
+  letter-spacing: var(--espacamento-titulo);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.topo__nav { display: none; }
+
+/* ============ HERO ============ */
+/* Eixo central: "Ofício" | poste | "22", com o texto centralizado abaixo. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+}
+
+/* Foto de fundo (homem barbudo). Celular: atmosfera escurecida atrás do texto.
+   Desktop: à direita, fundindo no carvão, e o cursor "faz a barba". */
+.hero__foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.hero__foto > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hero__foto-base { object-fit: cover; }
+.hero__foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--veu-foto);
+}
+
+.hero__interno {
+  max-width: var(--largura-max);
+  margin-inline: auto;
+  padding: var(--esp-5) var(--esp-3) var(--esp-6);
+  text-align: center;
+}
+
+/* O palco só serve de referência de largura (cqi) para o tamanho da marca */
+.hero__palco {
+  container-type: inline-size;
+  overflow-x: clip; /* nunca cria rolagem lateral, mesmo com fonte de reserva */
+}
+
+.hero__marca {
+  display: grid;
+  grid-template-columns: 1fr var(--poste-vao) 1fr;
+  align-items: center;
+  width: 100%;
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: clamp(var(--texto-marca-min), calc((100cqi - var(--poste-vao)) / var(--marca-razao)), var(--texto-marca-max));
+  line-height: var(--entrelinha-display);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.hero__palavra--esq { justify-self: end; }
+.hero__palavra--dir { justify-self: start; }
+
+/* Poste na coluna do meio: mais alto que as letras, atravessa a linha */
+.hero__poste {
+  justify-self: center;
+  display: grid;
+  width: var(--poste-largura);
+  height: var(--poste-altura);
+  pointer-events: none;
+}
+.hero__poste > * { grid-area: 1 / 1; width: 100%; height: 100%; }
+.hero__poste-img { object-fit: contain; }
+.hero__poste-canvas { visibility: hidden; }
+.hero__poste--3d .hero__poste-canvas { visibility: visible; }
+.hero__poste--3d .hero__poste-img { visibility: hidden; }
+
+/* Enquanto a entrada em GSAP não começa (no máximo 1,5 s: rede de segurança no <head>) */
+.entrada .hero [data-entrada] { opacity: 0; }
+/* Blocos das seções esperando a entrada ao rolar (mesma rede de segurança) */
+.revelar [data-revelar] { opacity: 0; }
+
+.hero__texto { margin-top: var(--esp-4); }
+.hero__chamada {
+  font-size: var(--texto-2);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+}
+.hero__apoio {
+  max-width: var(--largura-apoio);
+  margin: var(--esp-3) auto 0;
+  color: var(--cor-texto-suave);
+}
+.hero__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--esp-2) var(--esp-4);
+  margin-top: var(--esp-5);
+}
+.hero__fundacao {
+  margin-top: var(--esp-3);
+  font-size: var(--texto-secundario);
+  color: var(--cor-texto-suave);
+}
+
+/* ============ SEÇÕES ============ */
+/* Ritmo: largo (serviços) → estreito (ritual) → texto longo + imagem grande (equipe)
+   → faixa âmbar (regra) → de ponta a ponta (galeria) → dividido (horário). */
+.secao { padding-block: var(--esp-6); }
+.secao--faixa {
+  background: var(--cor-superficie);
+  border-block: var(--borda-fina) solid var(--cor-borda);
+}
+.secao__interno {
+  max-width: var(--largura-max);
+  margin-inline: auto;
+  padding-inline: var(--esp-3);
+}
+.secao__titulo {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-5);
+  line-height: var(--entrelinha-display);
+  letter-spacing: var(--espacamento-titulo);
+  text-transform: uppercase;
+}
+.secao__intro {
+  margin-top: var(--esp-3);
+  max-width: var(--largura-texto);
+  color: var(--cor-texto-suave);
+}
+
+/* --- Serviços: título à esquerda, cardápio à direita --- */
+.servicos__grade { display: grid; gap: var(--esp-5); }
+.servicos__cabeca .nota-demo { margin-top: var(--esp-2); }
+
+/* Assinatura da marca: o traço da navalha */
+.traco-navalha {
+  display: block;
+  width: min(100%, var(--largura-traco));
+  height: auto;
+  margin-top: var(--esp-3);
+  overflow: visible;
+}
+.traco-navalha__linha {
+  fill: none;
+  stroke: var(--cor-acento);
+  stroke-width: var(--traco-navalha);
+  stroke-linecap: round;
+}
+
+/* Cardápio: painel L1 com divisórias finas; um único item em destaque */
+.cardapio {
+  background: var(--cor-superficie);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+  box-shadow: var(--sombra-borda);
+  overflow: hidden;
+}
+.cardapio__item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--esp-3);
+  padding: var(--esp-3);
+}
+.cardapio__item + .cardapio__item { border-top: var(--borda-fina) solid var(--cor-borda); }
+.cardapio__nome {
+  font-size: var(--texto-1);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+}
+.cardapio__desc {
+  margin-top: var(--esp-1);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-secundario);
+}
+.cardapio__info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+.cardapio__tempo { color: var(--cor-texto-suave); font-size: var(--texto-secundario); }
+.cardapio__preco {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-3);
+  line-height: var(--entrelinha-titulo);
+  color: var(--cor-acento);
+  white-space: nowrap;
+}
+.cardapio__item--destaque {
+  background: var(--cor-acento);
+  color: var(--cor-sobre-acento);
+}
+.cardapio__item--destaque .cardapio__desc,
+.cardapio__item--destaque .cardapio__tempo,
+.cardapio__item--destaque .cardapio__preco { color: var(--cor-sobre-acento); }
+.cardapio__selo {
+  margin-bottom: var(--esp-1);
+  font-size: var(--texto-secundario);
+  font-weight: var(--peso-semi);
+}
+
+/* --- Ritual: passos ligados por uma linha (sequência real) + foto da toalha quente --- */
+.ritual-grade { display: grid; gap: var(--esp-6); }
+.ritual-grade__foto .foto { aspect-ratio: 4 / 5; }
+.ritual {
+  counter-reset: passo;
+  display: grid;
+  gap: var(--esp-6);
+  margin-top: var(--esp-6);
+}
+.ritual__passo {
+  counter-increment: passo;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--esp-6) 1fr;
+  column-gap: var(--esp-4);
+  row-gap: var(--esp-2);
+  color: var(--cor-texto-suave);
+}
+.ritual__passo::before {
+  content: counter(passo);
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: var(--esp-6);
+  height: var(--esp-6);
+  border: var(--borda-foco) solid var(--cor-acento);
+  border-radius: var(--raio-redondo);
+  background: var(--cor-fundo);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-3);
+  line-height: var(--entrelinha-display);
+  color: var(--cor-acento);
+}
+/* Linha que liga um passo ao próximo */
+.ritual__passo:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--esp-6) / 2 - var(--borda-fina));
+  top: var(--esp-6);
+  bottom: calc(-1 * var(--esp-6));
+  width: var(--borda-foco);
+  background: var(--cor-acento);
+}
+.ritual__nome {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: var(--esp-6);
+  font-size: var(--texto-2);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+  color: var(--cor-texto);
+}
+
+/* --- Quem corta: texto longo + retratos de tamanhos diferentes --- */
+.equipe { display: grid; gap: var(--esp-6); }
+.equipe__historia {
+  display: grid;
+  gap: var(--esp-3);
+  max-width: var(--largura-texto);
+  margin-top: var(--esp-4);
+  font-size: var(--texto-1);
+}
+.bairro {
+  max-width: var(--largura-texto);
+  margin-top: var(--esp-5);
+  padding: var(--esp-4) var(--esp-3);
+  background: var(--cor-fundo);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+  color: var(--cor-texto-suave);
+}
+.bairro__titulo {
+  margin-bottom: var(--esp-1);
+  font-size: var(--texto-1);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+  color: var(--cor-texto);
+}
+.equipe__fotos { display: grid; gap: var(--esp-5); }
+.barbeiro--segundo { width: 72%; justify-self: end; }
+.barbeiro { position: relative; color: var(--cor-texto-suave); }
+.barbeiro__nome {
+  margin-top: var(--esp-3);
+  font-size: var(--texto-2);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+  color: var(--cor-texto);
+}
+.barbeiro__papel { margin-top: var(--esp-1); }
+
+/* --- A regra da casa: faixa âmbar de ponta a ponta --- */
+.regra {
+  padding-block: var(--esp-6);
+  background: var(--cor-acento);
+  color: var(--cor-sobre-acento);
+}
+.regra__titulo {
+  font-size: var(--texto-1);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+}
+.regra__frase {
+  margin-top: var(--esp-2);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-faixa);
+  line-height: var(--entrelinha-display);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.regra__apoio {
+  max-width: var(--largura-texto);
+  margin-top: var(--esp-4);
+  font-size: var(--texto-1);
+}
+.regra .nota-demo { color: var(--cor-sobre-acento); }
+
+/* --- Galeria: de ponta a ponta, uma foto grande --- */
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-2);
+  max-width: var(--largura-ampla);
+  margin: var(--esp-5) auto 0;
+  padding-inline: var(--esp-2);
+}
+.galeria__item--destaque { grid-column: 1 / -1; }
+.galeria figure { display: grid; gap: var(--esp-2); }
+.galeria .foto { aspect-ratio: 4 / 5; }
+.galeria__item--destaque .foto { aspect-ratio: 4 / 3; }
+.galeria figcaption { font-size: var(--texto-secundario); color: var(--cor-texto-suave); }
+
+/* --- Horário e mapa --- */
+.local { display: grid; gap: var(--esp-5); }
+.horario {
+  width: 100%;
+  margin-top: var(--esp-4);
+  border-collapse: collapse;
+  background: var(--cor-fundo);
+  border: var(--borda-fina) solid var(--cor-borda);
+}
+.horario th,
+.horario td {
+  padding: var(--esp-2) var(--esp-3);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+  text-align: left;
+}
+.horario th { font-weight: var(--peso-regular); color: var(--cor-texto-suave); }
+.horario td { text-align: right; font-weight: var(--peso-semi); }
+.local__texto > .nota-demo { margin-top: var(--esp-2); }
+.endereco {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  margin-block: var(--esp-4);
+  font-style: normal;
+}
+.local__chamada { margin-bottom: var(--esp-3); }
+.local__foto { display: grid; gap: var(--esp-2); }
+.local__foto .foto { aspect-ratio: 4 / 3; }
+.local__legenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2) var(--esp-4);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-secundario);
+}
+.local__legenda .link { gap: var(--esp-2); font-size: var(--texto-corpo); }
+
+/* ============ DESTAQUE TIPOGRÁFICO ============ */
+/* Letreiro pintado à mão (Yellowtail) para UMA palavra ou expressão por bloco.
+   Nunca em parágrafos, botões ou rótulos. */
+.destaque {
+  font-family: var(--fonte-destaque);
+  font-weight: var(--peso-regular);
+  font-size: 1.15em;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--cor-acento);
+}
+.hero__chamada .destaque { font-size: 1.3em; }
+.regra .destaque { color: var(--cor-sobre-acento); }
+
+/* ============ ELEMENTOS TEMÁTICOS ============ */
+/* Faixa de poste de barbearia: listras âmbar, branco e carvão (nunca vermelho e azul) */
+.faixa-poste {
+  height: var(--esp-2);
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--cor-acento) 0 var(--listra),
+    var(--cor-texto) var(--listra) calc(2 * var(--listra)),
+    var(--cor-fundo) calc(2 * var(--listra)) calc(3 * var(--listra)),
+    var(--cor-texto) calc(3 * var(--listra)) calc(4 * var(--listra))
+  );
+}
+
+/* Selo circular da casa, no canto do retrato de quem toca a casa */
+.selo {
+  position: absolute;
+  top: var(--esp-3);
+  right: var(--esp-3);
+  z-index: 1;
+  width: var(--selo);
+  height: var(--selo);
+}
+.selo__fundo { fill: var(--cor-fundo); stroke: var(--cor-acento); stroke-width: var(--borda-foco); }
+.selo__aro { fill: none; stroke: var(--cor-borda); stroke-width: var(--borda-fina); }
+.selo__texto {
+  fill: var(--cor-acento);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-meta);
+  letter-spacing: var(--espacamento-titulo);
+}
+.selo__tesoura {
+  fill: none;
+  stroke: var(--cor-texto);
+  stroke-width: var(--traco-icone);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============ AGENDAR (a comanda) ============ */
+html:not(.js) .comanda { display: none; } /* sem JS: só o link direto do <noscript> */
+.agendar__sem-js,
+.agendar__conversar { margin-top: var(--esp-4); color: var(--cor-texto-suave); }
+
+.comanda {
+  display: grid;
+  gap: var(--esp-5);
+  margin-top: var(--esp-5);
+}
+.grupo { min-width: 0; margin: 0; padding: 0; border: 0; }
+.grupo + .grupo { margin-top: var(--esp-5); }
+.grupo__titulo {
+  margin-bottom: var(--esp-2);
+  padding: 0;
+  font-size: var(--texto-1);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+}
+.opcoes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-2);
+}
+.opcoes--barbeiro { grid-template-columns: 1fr; }
+.opcoes--dia { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.opcoes--hora { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* Rádio de verdade por baixo (teclado e leitor de tela), cartão por cima */
+.opcao { position: relative; display: block; cursor: pointer; }
+.opcao input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.opcao__corpo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--esp-1);
+  height: 100%;
+  min-height: var(--alvo-toque);
+  padding: var(--esp-2) var(--esp-5) var(--esp-2) var(--esp-3);
+  background: var(--cor-fundo);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-1);
+}
+.opcoes--hora .opcao__corpo { align-items: center; padding-inline: var(--esp-2); }
+.opcao__nome { font-weight: var(--peso-semi); line-height: var(--entrelinha-titulo); }
+.opcao__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--esp-2);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-secundario);
+}
+.opcao__marca {
+  position: absolute;
+  top: var(--esp-2);
+  right: var(--esp-2);
+  color: var(--cor-acento);
+  visibility: hidden;
+}
+.opcoes--dia .opcao__marca,
+.opcoes--hora .opcao__marca { display: none; }
+.opcao:hover .opcao__corpo { border-color: var(--cor-texto-suave); }
+/* Escolhido: borda âmbar + marca de "check" (não depende só da cor) */
+.opcao input:checked + .opcao__corpo {
+  border-color: var(--cor-acento);
+  box-shadow: inset 0 0 0 var(--borda-fina) var(--cor-acento);
+}
+.opcao input:checked + .opcao__corpo .opcao__marca { visibility: visible; }
+/* Dia e horário (botões pequenos): o escolhido fica preenchido de âmbar */
+.opcoes--dia .opcao__corpo { padding-right: var(--esp-3); }
+.opcoes--dia .opcao input:checked + .opcao__corpo,
+.opcoes--hora .opcao input:checked + .opcao__corpo { background: var(--cor-acento); color: var(--cor-sobre-acento); }
+.opcoes--dia .opcao input:checked + .opcao__corpo .opcao__meta { color: var(--cor-sobre-acento); }
+.opcao input:focus-visible + .opcao__corpo {
+  outline: var(--borda-foco) solid var(--cor-acento);
+  outline-offset: var(--borda-foco);
+}
+
+.aviso-erro {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  margin-top: var(--esp-2);
+  font-size: var(--texto-secundario);
+}
+.aviso-erro .icone { color: var(--cor-acento); }
+.grupo--erro .opcoes--hora .opcao__corpo { border-color: var(--cor-acento); }
+
+/* Alto contraste do sistema: o escolhido continua diferente dos outros */
+@media (forced-colors: active) {
+  .opcao input:checked + .opcao__corpo { border: var(--borda-foco) solid Highlight; }
+  .opcao__marca { forced-color-adjust: auto; }
+}
+
+/* A comanda: um "ticket" com faixa de poste no topo e linha de corte com a tesoura */
+.comanda__resumo {
+  align-self: start;
+  overflow: hidden;
+  background: var(--cor-fundo);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+}
+.comanda__titulo {
+  margin: var(--esp-4) var(--esp-4) 0;
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-3);
+  line-height: var(--entrelinha-titulo);
+  letter-spacing: var(--espacamento-titulo);
+  text-transform: uppercase;
+}
+.comanda__lista { margin: var(--esp-3) var(--esp-4) 0; }
+.comanda__lista > div {
+  display: grid;
+  grid-template-columns: var(--esp-9) 1fr;
+  gap: var(--esp-3);
+  padding-block: var(--esp-2);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+}
+.comanda__lista dt { color: var(--cor-texto-suave); font-size: var(--texto-secundario); }
+.comanda__lista dd { margin: 0; font-weight: var(--peso-semi); }
+.comanda__corte {
+  position: relative;
+  margin: var(--esp-4) 0 var(--esp-3);
+  border-top: var(--borda-foco) dashed var(--cor-borda);
+}
+.comanda__corte .icone {
+  position: absolute;
+  top: 0;
+  left: var(--esp-3);
+  transform: translateY(-50%) rotate(-90deg);
+  padding-inline: var(--esp-1);
+  background: var(--cor-fundo);
+  color: var(--cor-texto-suave);
+  box-sizing: content-box;
+}
+.comanda__envio,
+.comanda__enviada { display: grid; gap: var(--esp-3); padding: 0 var(--esp-4) var(--esp-4); }
+.comanda__enviada-titulo {
+  font-size: var(--texto-2);
+  font-weight: var(--peso-semi);
+  line-height: var(--entrelinha-titulo);
+}
+.comanda__nota,
+.comanda__rascunho { color: var(--cor-texto-suave); font-size: var(--texto-secundario); }
+
+.campo { display: grid; gap: var(--esp-1); }
+.campo__rotulo { font-weight: var(--peso-semi); }
+.campo__entrada {
+  min-height: var(--alvo-toque);
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--cor-superficie);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-1);
+  color: var(--cor-texto);
+  font: inherit;
+}
+.campo__entrada:focus-visible { outline: var(--borda-foco) solid var(--cor-acento); outline-offset: 0; }
+.campo__entrada[aria-invalid] { border-color: var(--cor-acento); }
+
+/* Link com cara de link, mas que é um botão (ações na própria página) */
+.link--botao {
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ============ RODAPÉ ============ */
+.rodape { color: var(--cor-texto-suave); }
+.rodape__interno {
+  display: grid;
+  gap: var(--esp-2);
+  max-width: var(--largura-max);
+  margin-inline: auto;
+  padding: var(--esp-6) var(--esp-3);
+}
+.rodape__marca {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  font-size: var(--texto-4);
+  line-height: var(--entrelinha-titulo);
+  text-transform: uppercase;
+  color: var(--cor-texto);
+}
+.rodape__legal {
+  margin-top: var(--esp-3);
+  font-size: var(--texto-meta);
+  line-height: var(--entrelinha-meta);
+}
+
+/* ============ FIXOS ============ */
+/* Barra de agendar (celular): só aparece depois que o botão do hero sai da tela */
+.barra-agendar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--z-barra);
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--cor-fundo);
+  border-top: var(--borda-fina) solid var(--cor-borda);
+  box-shadow: var(--sombra-flutuante);
+  transition: transform var(--mov-curto) var(--curva-saida), opacity var(--mov-curto) var(--curva-saida);
+}
+.barra-oculta .barra-agendar {
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform var(--mov-curto) var(--curva-entrada), opacity var(--mov-curto) var(--curva-entrada), visibility 0s linear var(--mov-curto);
+}
+
+/* Selo: faixa fina e fixa. No celular fica colada em cima da barra de agendamento
+   (e desce junto quando ela some); no desktop, no pé da janela.
+   O body reserva esse espaço para nada ficar escondido. */
+.selo-demo {
+  position: fixed;
+  inset-inline: 0;
+  bottom: var(--altura-barra);
+  z-index: var(--z-selo);
+  padding: var(--esp-1) var(--esp-2);
+  background: var(--cor-fundo);
+  border-top: var(--borda-fina) solid var(--cor-borda);
+  text-align: center;
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-meta);
+  line-height: var(--entrelinha-meta);
+  pointer-events: none;
+  transition: transform var(--mov-curto) var(--curva-saida);
+}
+.barra-oculta .selo-demo { transform: translateY(var(--altura-barra)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .barra-agendar,
+  .barra-oculta .barra-agendar,
+  .selo-demo { transition: none; }
+}
+
+/* ============ TABLET (≥ 720px) ============ */
+@media (min-width: 720px) {
+  .galeria {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--esp-3);
+    padding-inline: var(--esp-3);
+  }
+  .galeria__item--destaque { grid-column: span 2; grid-row: span 2; }
+  .galeria__item--destaque figure { height: 100%; grid-template-rows: 1fr auto; }
+  .galeria__item--destaque .foto { aspect-ratio: auto; height: 100%; }
+
+  .equipe__fotos { grid-template-columns: 7fr 5fr; align-items: start; }
+  .barbeiro--segundo { width: auto; margin-top: var(--esp-8); }
+}
+
+/* ============ DESKTOP (≥ 1024px) ============ */
+@media (min-width: 1024px) {
+  :root { --reserva-base: var(--esp-5); } /* só a faixa do selo */
+  .barra-agendar { display: none; }
+
+  .topo__interno { padding-inline: var(--esp-5); }
+  .topo__nav { display: block; margin-left: auto; }
+  .topo__nav ul { display: flex; gap: var(--esp-1); }
+  .topo__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--alvo-toque);
+    padding-inline: var(--esp-3);
+    color: var(--cor-texto-suave);
+    text-decoration: none;
+  }
+  .topo__nav a:hover { color: var(--cor-texto); }
+
+  .hero__interno { padding: var(--esp-5) var(--esp-5) var(--esp-7); }
+  /* Foto à direita, na proporção dela (o pincel do cursor usa a mesma caixa) */
+  .hero__foto {
+    inset: 0 calc(-1 * var(--foto-recuo)) 0 auto;
+    aspect-ratio: 768 / 864;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 45%), linear-gradient(to top, transparent, #000 20%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent, #000 45%), linear-gradient(to top, transparent, #000 20%);
+    mask-composite: intersect;
+  }
+  .hero__foto::after { background: var(--veu-foto-desktop); }
+
+  .secao { padding-block: var(--esp-7); }
+  .secao__interno { padding-inline: var(--esp-5); }
+  .secao__titulo { font-size: var(--texto-6); }
+
+  /* Serviços: cabeçalho em linha e cardápio em duas colunas (sem coluna vazia ao lado) */
+  .servicos__grade { gap: var(--esp-5); }
+  .servicos__cabeca {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--esp-7);
+    align-items: end;
+  }
+  .servicos__cabeca > .secao__titulo,
+  .servicos__cabeca > .traco-navalha { grid-column: 1; }
+  .servicos__cabeca > p { grid-column: 2; }
+  .servicos__cabeca > .secao__intro { grid-row: 1 / span 2; align-self: end; margin-top: 0; }
+  .servicos__cabeca > .nota-demo { grid-row: 3; }
+  .cardapio {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--borda-fina);
+    background: var(--cor-borda); /* as frestas de 1px viram as divisórias */
+  }
+  .cardapio__item { padding: var(--esp-4); background: var(--cor-superficie); }
+  .cardapio__item + .cardapio__item { border-top: 0; }
+  .cardapio__item--destaque { grid-column: 1 / -1; background: var(--cor-acento); }
+
+  .equipe {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--esp-7);
+    align-items: start;
+  }
+
+  .regra { padding-block: var(--esp-7); }
+
+  :root { --selo: 120px; }
+  .selo { top: calc(-1 * var(--esp-5)); right: auto; left: calc(-1 * var(--esp-6)); }
+
+  .comanda {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--esp-6);
+  }
+  .comanda__resumo { position: sticky; top: calc(var(--altura-topo) + var(--esp-3)); }
+  .opcoes--servico,
+  .opcoes--barbeiro { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .opcoes--dia { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .opcoes--hora { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+  .ritual-grade {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--esp-7);
+    align-items: center;
+  }
+  .ritual-grade__foto .foto { aspect-ratio: 3 / 4; }
+
+  .rodape__interno { padding-inline: var(--esp-5); }
+
+  .local {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--esp-6);
+    align-items: center;
+  }
+
+  /* No desktop o selo vira faixa no rodapé da janela (sem cobrir conteúdo de forma permanente) */
+  .selo-demo,
+  .barra-oculta .selo-demo { bottom: 0; transform: none; }
+}
+
+/* ============ IMPRESSÃO ============ */
+/* Tudo visível e o traço da navalha inteiro, mesmo nas seções que não foram roladas */
+@media print {
+  [data-revelar],
+  [data-entrada] { opacity: 1 !important; transform: none !important; }
+  .traco-navalha__linha { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+  .barra-agendar,
+  .hero__foto-pincel { display: none !important; }
+}
